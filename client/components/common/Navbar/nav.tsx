@@ -71,7 +71,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <button
-            className="w-[40px] h-[40px] flex items-center justify-center hover:bg-neutral-200 rounded-full"
+            className="w-[40px] h-[40px] flex items-center justify-center hover:bg-neutral-100 rounded-full"
             // onClick={handleToggleSearch}
           >
             <Search />
