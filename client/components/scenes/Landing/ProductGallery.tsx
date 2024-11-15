@@ -1,5 +1,10 @@
 import React from "react";
-
+import dynamic from "next/dynamic";
+import { HeroImgs } from "@/constants/img.constants";
+import GridImageContent from "@/components/common/GridImageContent";
+const ImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
+  ssr: false,
+});
 const ProductGallery = () => {
   return (
     <section className="max-sm:mt-20 mt-32">
@@ -11,8 +16,33 @@ const ProductGallery = () => {
           All Brands. Fashion Line.
         </p>
 
-              <div>
-                  
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          <GridImageContent
+            imgUrl={HeroImgs.Grid1}
+            textFirstString="The Custom"
+            textSecond="Party Fly"
+            btnContent="Purchase"
+          />
+          <GridImageContent
+            imgUrl={HeroImgs.Grid2}
+            textFirstString="The Custom"
+            textSecond="Party Fly"
+            btnContent="Shop Now"
+            cls="bg-white text-black hover:bg-white/90"
+          />
+          <GridImageContent
+            imgUrl={HeroImgs.Grid3}
+            textFirstString="The Custom"
+            textSecond="Party Fly"
+            btnContent="Shop Now"
+            cls="bg-white text-black hover:bg-white/90"
+          />
+          <GridImageContent
+            imgUrl={HeroImgs.Grid4}
+            textFirstString="The Custom"
+            textSecond="Party Fly"
+            btnContent="Purchase"
+          />
         </div>
       </div>
     </section>
