@@ -66,7 +66,7 @@ export const NavLinkContainer = () => {
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">
             Men
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="bg-white">
             <ul className=" w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2  lg:w-[600px]  grid ">
               {menLink.map((link, idx) => {
                 return (
@@ -90,7 +90,7 @@ export const NavLinkContainer = () => {
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">
             Women
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="bg-white">
             <ul className=" w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2  lg:w-[600px]  grid ">
               {womenLink.map((link, idx) => {
                 return (
@@ -113,7 +113,7 @@ export const NavLinkContainer = () => {
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">
             Kids
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="bg-white">
             <ul className=" w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2  lg:w-[600px]  grid ">
               {kidLink.map((link, idx) => {
                 return (
@@ -136,7 +136,7 @@ export const NavLinkContainer = () => {
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">
             Collections
           </NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="bg-white">
             <ul className=" w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2  lg:w-[600px]  grid ">
               {collectionLink.map((link, idx) => {
                 return (

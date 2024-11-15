@@ -1,4 +1,5 @@
 "use client";
+import CustomAccount from "@/components/custom/CustomAccount";
 import CustomDropDown from "@/components/custom/CustomDropDown";
 import CustomToolTip from "@/components/custom/CustomToolTip";
 import {
@@ -8,7 +9,6 @@ import {
   Ship,
   ShoppingBag,
   Store,
-  User,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,7 +16,6 @@ import React, { useCallback, useEffect, useState } from "react";
 
 const Navbar = () => {
   const [toggled, setToggled] = useState<boolean>(false);
-
   const handleToggled = useCallback(() => {
     setToggled((prev) => {
       const newToggled = !prev;
@@ -80,7 +79,7 @@ const Navbar = () => {
           <div className="max-lg:hidden flex gap-3">
             <div>
               <CustomToolTip label="user">
-                <User />
+                <CustomAccount />
               </CustomToolTip>
             </div>
             <div>
@@ -151,7 +150,7 @@ export const MobileSidebar = ({
           </h2>
         </div>
         <div className="my-5 flex gap-3">
-          <button className="px-6 py-2 bg-black text-white rounded-full hover:bg-neutral-800">
+          <button className="px-6 py-2 bg-custom-black text-white rounded-full hover:bg-neutral-800">
             Shop Now
           </button>
           <button className="px-6 py-2 border-black border-2  rounded-full">
