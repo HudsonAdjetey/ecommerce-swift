@@ -60,7 +60,7 @@ export default CustomDropDown;
 
 export const NavLinkContainer = () => {
   return (
-    <NavigationMenu>
+    <NavigationMenu className="z-[90]">
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">

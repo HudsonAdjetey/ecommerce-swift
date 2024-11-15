@@ -24,7 +24,7 @@ const CustomSearchBar = ({
       }}
       ref={searchContainerRef}
       className={cn(
-        "fixed bg-white w-full max-h-[80vh]  left-0 right-0 z-50 overflow-hidden", // Set max height for the search bar container
+        "fixed bg-white w-full max-h-[80vh]  left-0 right-0 z-50 overflow-hidden",
         className
       )}
     >

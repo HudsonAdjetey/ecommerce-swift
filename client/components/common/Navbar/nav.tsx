@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import CustomSearchBar from "@/components/custom/CustomSearchBar";
+import { useOutsideClick } from "@/hooks/use-outside-click";
 
 const Navbar = () => {
   const [toggled, setToggled] = useState<boolean>(false);
@@ -78,6 +79,9 @@ const Navbar = () => {
       }
     })();
   }, [toggleSearch]);
+
+  // use outside click
+  useOutsideClick(searchContainerRef, handleToggleSearch);
 
   return (
     <header className="bg-white h-[64px] flex items-center justify-between shadow-sm sticky top-0 inset-x-0 z-[900]">
