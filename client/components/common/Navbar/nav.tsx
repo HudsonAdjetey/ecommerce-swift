@@ -1,6 +1,8 @@
 "use client";
 import CustomAccount from "@/components/custom/CustomAccount";
 import CustomDropDown from "@/components/custom/CustomDropDown";
+import { AnimatePresence, motion } from "framer-motion";
+
 import CustomToolTip from "@/components/custom/CustomToolTip";
 import {
   HelpCircle,
@@ -12,10 +14,14 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import CustomSearchBar from "@/components/custom/CustomSearchBar";
 
 const Navbar = () => {
   const [toggled, setToggled] = useState<boolean>(false);
+  const [toggleSearch, setToggleSearch] = useState<boolean>(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   const handleToggled = useCallback(() => {
     setToggled((prev) => {
       const newToggled = !prev;
@@ -25,6 +31,13 @@ const Navbar = () => {
       return newToggled;
     });
   }, []);
+
+  const handleToggleSearch = () => {
+    setToggleSearch(!toggleSearch);
+    if (!toggleSearch) {
+      // perform resetting search
+    }
+  };
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -55,10 +68,21 @@ const Navbar = () => {
     };
   }, [toggled, handleToggled]);
 
+  //   side effect for toggle search
+  useEffect(() => {
+    (function () {
+      if (toggleSearch) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
+    })();
+  }, [toggleSearch]);
+
   return (
-    <header className="bg-white px-4 h-[64px] 2xl:px-10 flex items-center justify-between shadow-sm sticky top-0 inset-x-0 z-[900]">
+    <header className="bg-white h-[64px] flex items-center justify-between shadow-sm sticky top-0 inset-x-0 z-[900]">
       {/* desktop */}
-      <nav className="desktop relative flex items-center justify-between gap-10 w-full">
+      <nav className="desktop bg-white 2xl:px-10   px-4 relative flex items-center justify-between gap-10 w-full">
         {/* logo */}
         <Link href="/">
           <span className="text-2xl font-bold text-black">SwiftMart</span>
@@ -72,7 +96,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <button
             className="w-[40px] h-[40px] flex items-center justify-center hover:bg-neutral-100 rounded-full"
-            // onClick={handleToggleSearch}
+            onClick={handleToggleSearch}
           >
             <Search />
           </button>
@@ -111,6 +135,15 @@ const Navbar = () => {
           <div className="fixed lg:hidden  inset-0 flex w-full   h-screen bg-neutral-400/20 z-50"></div>
         )}
         {/* overlay */}
+        {toggleSearch && (
+          <div className="fixed top-[65px]  inset-0 flex w-full   h-screen bg-neutral-400/20 z-50"></div>
+        )}
+        {toggleSearch && (
+          <CustomSearchBar
+            handleToggle={handleToggleSearch}
+            searchContainerRef={searchContainerRef}
+          />
+        )}
       </nav>
       {/* desktop */}
     </header>
