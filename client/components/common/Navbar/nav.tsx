@@ -89,7 +89,9 @@ const Navbar = () => {
       <nav className="desktop bg-white 2xl:px-10   px-4 relative flex items-center justify-between gap-10 w-full">
         {/* logo */}
         <Link href="/">
-          <span className="text-2xl font-bold text-black">SwiftMart</span>
+          <span className="text-2xl max-md:text-xl max-md:font-medium font-semibold text-black">
+            SwiftMart
+          </span>
         </Link>
         {/* logo */}
 
@@ -178,6 +180,15 @@ export const MobileSidebar = ({
 
       <div className="mt-10">
         <div>
+          <div>
+            <ul className="mb-10 space-y-4 text-xl font-medium">
+              <li>Men</li>
+              <li>Women</li>
+              <li>Kids</li>
+              <li>Collection</li>
+            </ul>
+          </div>
+
           <h2 className="text-lg text-black/50 mb-3">
             Shop Right from <span className="text-black/80">SwiftMart</span> for
             all your best products.{" "}

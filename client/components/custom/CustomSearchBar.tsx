@@ -1,6 +1,6 @@
 import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CustomSearchBar = ({
@@ -42,10 +42,13 @@ const CustomSearchBar = ({
         </button>
       </div>
 
-      <div className="px-4  overflow-y-auto max-h-[calc(80vh-64px)]">
+      <div className="2xl:px-10 px-4  overflow-y-auto max-h-[calc(80vh-64px)]">
         <div className="space-y-4 py-5 ">
-          <p className="text-sm font-medium text-black/70">
-            Search result empty
+          <p className="text-sm text-center flex items-center gap-3 justify-center font-medium text-black/70">
+            <span>Search result empty</span>
+            <span>
+              <Search size={20} />
+            </span>
           </p>
         </div>
       </div>
