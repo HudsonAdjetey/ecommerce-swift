@@ -20,14 +20,16 @@ const Hero = () => {
           />
 
           <span className="absolute inset-0 bg-black/30" />
-          <div className="absolute top-1/2 inset-x-0 p-10">
-            <h1 className="text-6xl text-white font-bold max-md:text-4xl max-md:font-semibold mb-3">
-              Nike Shop
-            </h1>
-            <p className="text-xl text-white">
-              We have all your wearables on our website
-            </p>
-          </div>
+          <figure className="absolute top-1/2 inset-x-0 p-10">
+            <figcaption>
+              <h1 className="text-6xl text-white font-bold max-md:text-4xl max-md:font-semibold mb-3">
+                Nike Shop
+              </h1>
+              <p className="text-xl text-white">
+                We have all your wearables on our website
+              </p>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>

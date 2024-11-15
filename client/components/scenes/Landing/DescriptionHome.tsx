@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import CustomBtn from "@/components/custom/CustomBtn";
 import dynamic from "next/dynamic";
@@ -8,7 +9,10 @@ const ImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
 const DescriptionHome = () => {
   return (
     <section className=" bg-white container">
-      <div className="my-10 sm:my-20  flex flex-col items-center text-center px-4 ">
+      <div
+        aria-orientation="horizontal"
+        className="my-10 sm:my-20  flex flex-col items-center text-center px-4 "
+      >
         <h2 className="text-5xl font-semibold mb-3 tracking-tight">
           All your Desires
         </h2>
@@ -29,12 +33,14 @@ const DescriptionHome = () => {
             className="object-cover w-full h-full"
             sizes="(max-width: 768px) 40vw, 50vw"
           />
-          <div className="absolute inset-0 flex items-end p-4">
-            <CustomBtn
-              textString="Explore Now"
-              className="hover:bg-white hover:text-black"
-            />
-          </div>
+          <figure className="absolute inset-0 flex items-end p-4">
+            <figcaption>
+              <CustomBtn
+                textString="Explore Now"
+                className="hover:bg-white hover:text-black"
+              />
+            </figcaption>
+          </figure>
         </div>
         <div className="w-1/2 max-lg:w-full mb-10 ">
           <h3 className="text-3xl">Shop the Latest Puma Today</h3>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  background-color: #1D1F20;
+  background-color: #1d1f20;
 }
 
 @layer base {
@@ -12,7 +12,6 @@ body {
     --foreground: 240 10% 3.9%;
   }
 }
-
 
 @layer base {
   * {
@@ -24,8 +23,8 @@ body {
   }
 }
 
-@layer utilities {
-  .shad-cn-utBtn {
-    @apply bg-transparent shadow-none text-black/80 w-[40px] h-[40px] rounded-full hover:bg-neutral-100;
+@layer components {
+  .cs_btncustom {
+    @apply px-6 py-3 bg-black text-white rounded-full hover:bg-neutral-800;
   }
 }
