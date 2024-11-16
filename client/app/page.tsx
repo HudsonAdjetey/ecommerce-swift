@@ -3,6 +3,7 @@ import Navbar from "@/components/common/Navbar/nav";
 import DescriptionHome from "@/components/scenes/Landing/DescriptionHome";
 import Hero from "@/components/scenes/Landing/Hero";
 import ProductGallery from "@/components/scenes/Landing/ProductGallery";
+import TrendingProduct from "@/components/scenes/Landing/TrendingProduct";
 import React from "react";
 const page = () => {
   return (
@@ -11,6 +12,7 @@ const page = () => {
       <Hero />
       <DescriptionHome />
       <ProductGallery />
+      <TrendingProduct />
     </main>
   );
 };

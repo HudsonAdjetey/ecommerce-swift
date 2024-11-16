@@ -9,3 +9,14 @@ interface NavLinksDataProps {
     items: LinkTypes[];
   };
 }
+
+// home products
+interface ProductListLandingProps {
+  src: string | StaticImageData;
+  alt: string;
+  title: string;
+  description?: string;
+  price: string;
+  category?: string;
+  link: string;
+}
