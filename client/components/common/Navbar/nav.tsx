@@ -212,7 +212,7 @@ export const MobileSidebar = ({
             </span>
             <span className="text-base">Help</span>
           </Link>
-          <Link href={"/contact"} className="flex items-center gap-4">
+          <Link href={"/cart"} className="flex items-center gap-4">
             <span>
               <ShoppingBag />
             </span>

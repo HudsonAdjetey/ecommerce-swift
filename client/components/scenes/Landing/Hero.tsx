@@ -16,7 +16,7 @@ const Hero = () => {
             width={1000}
             height={100}
             className="w-full h-full"
-            sizes="(max-width: 768px) 40vw, 60vw"
+            sizes="(max-width: 768px) 70vw, 90vw"
           />
 
           <span className="absolute inset-0 bg-black/30" />
