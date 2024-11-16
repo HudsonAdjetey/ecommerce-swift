@@ -114,14 +114,14 @@ const Navbar = () => {
             </div>
             <div>
               <CustomToolTip label="cart">
-                <div className="relative">
+                <Link href={"/cart"} className="relative">
                   <span>
                     <ShoppingBag />
                   </span>
                   <span className="absolute -top-3 -right-2 text-sm font-bold">
                     0
                   </span>
-                </div>
+                </Link>
               </CustomToolTip>
             </div>
           </div>
