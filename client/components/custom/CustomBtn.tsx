@@ -11,7 +11,7 @@ const CustomBtn = ({
   return (
     <button
       className={cn(
-        "px-6 py-3 font-semibold  bg-black text-white  transition-all duration-200 rounded-full",
+        "px-6 py-3 max-sm:text-sm font-semibold  bg-black text-white  transition-all duration-200 rounded-full",
         className
       )}
     >
