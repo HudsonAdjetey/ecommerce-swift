@@ -1,5 +1,7 @@
 "use client";
+import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar/nav";
+import ContentBase from "@/components/scenes/Landing/ContentBase";
 import DescriptionHome from "@/components/scenes/Landing/DescriptionHome";
 import Discover from "@/components/scenes/Landing/Discover";
 import Hero from "@/components/scenes/Landing/Hero";
@@ -15,6 +17,8 @@ const page = () => {
       <ProductGallery />
       <TrendingProduct />
       <Discover />
+      <ContentBase />
+      <Footer />
     </main>
   );
 };

@@ -1,23 +1,21 @@
+import ImageBlur from "@/components/common/ImageBlur";
+import { BannerImages } from "@/constants/img.constants";
 import React from "react";
 
 const Discover = () => {
   return (
-    <article className="max-sm:mt-20 mt-32 container flex-col items-center flex">
-      <h3 className="text-4xl text-center max-sm:text-3xl">
+    <article className="max-sm:mt-20 mt-32  ">
+      <h3 className="text-5xl text-center max-sm:text-3xl">
         Discover More Than Just Fashion
       </h3>
-      <p className=" max-w-xl text-center max-sm:w-full text-black/70 text-lg font-normal my-5">
-        At <strong className="text-black ">SwiftMart</strong>, we&apos;re all
-        about helping you stay ahead in style. We bring you the best from top
-        brands like <strong className="text-black">Nike, </strong>
-        <strong className="text-black">Fila</strong>, and{" "}
-        <strong className="text-black">Vans</strong>. Whether you&apos;re
-        looking for sleek sneakers, casual kicks, or the latest in activewear,
-        we&apos;ve got your wardrobe covered from head to toe.
-      </p>
-      <h4 className="text-lg tracking-wider font-medium">
-        Step up your style. Upgrade your wardrobe. All in one place.
-      </h4>
+      <ImageBlur
+        src={BannerImages.BannerImage2}
+        width={1000}
+        height={460}
+        alt="line up sneakers"
+        className="w-full h-[400px] mt-10"
+        sizes="(max-width:768px) 60vw, 80vw"
+      />
     </article>
   );
 };

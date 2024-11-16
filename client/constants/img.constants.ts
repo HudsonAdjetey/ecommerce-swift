@@ -42,3 +42,7 @@ export const LandingImagesProduct = {
   kid11,
   kid12,
 };
+
+import BannerImage from "@/public/images/banner1.png";
+import BannerImage2 from "@/public/images/fachry-zella-devandra-WBDK76pCb9E-unsplash.jpg"
+export const BannerImages = { BannerImage, BannerImage2 };
