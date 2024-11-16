@@ -1,5 +1,4 @@
 import React from "react";
-import { HeroImgs } from "@/constants/img.constants";
 import dynamic from "next/dynamic";
 import { StaticImageData } from "next/image";
 import { cn } from "@/lib/utils";

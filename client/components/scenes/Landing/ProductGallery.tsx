@@ -1,10 +1,7 @@
 import React from "react";
-import dynamic from "next/dynamic";
 import { HeroImgs } from "@/constants/img.constants";
 import GridImageContent from "@/components/common/GridImageContent";
-const ImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
-  ssr: false,
-});
+
 const ProductGallery = () => {
   return (
     <section className="max-sm:mt-20 mt-32">

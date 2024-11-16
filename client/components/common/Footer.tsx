@@ -1,4 +1,3 @@
-import { GitBranch } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import CustomBtn from "../custom/CustomBtn";

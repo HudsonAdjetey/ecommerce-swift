@@ -4,13 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 interface SwiperProps {
   children: React.ReactNode;
   textContent?: string;
-  cls?: string;
 }
-const SwiperCustom: React.FC<SwiperProps> = ({
-  children,
-  textContent,
-  cls,
-}) => {
+const SwiperCustom: React.FC<SwiperProps> = ({ children, textContent }) => {
   const swiperRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -50,9 +45,10 @@ const SwiperCustom: React.FC<SwiperProps> = ({
       window.addEventListener("scroll", updateScrollButtons);
     }
     return () => {
-      swiperElement &&
+      if (swiperElement) {
         swiperElement.removeEventListener("scroll", updateScrollButtons);
-      window.removeEventListener("scroll", updateScrollButtons);
+        window.removeEventListener("scroll", updateScrollButtons);
+      }
     };
   }, []);
 

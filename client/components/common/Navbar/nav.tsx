@@ -1,7 +1,6 @@
 "use client";
 import CustomAccount from "@/components/custom/CustomAccount";
 import CustomDropDown from "@/components/custom/CustomDropDown";
-import { AnimatePresence, motion } from "framer-motion";
 
 import CustomToolTip from "@/components/custom/CustomToolTip";
 import {
