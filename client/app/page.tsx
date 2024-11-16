@@ -1,6 +1,7 @@
 "use client";
 import Navbar from "@/components/common/Navbar/nav";
 import DescriptionHome from "@/components/scenes/Landing/DescriptionHome";
+import Discover from "@/components/scenes/Landing/Discover";
 import Hero from "@/components/scenes/Landing/Hero";
 import ProductGallery from "@/components/scenes/Landing/ProductGallery";
 import TrendingProduct from "@/components/scenes/Landing/TrendingProduct";
@@ -13,6 +14,7 @@ const page = () => {
       <DescriptionHome />
       <ProductGallery />
       <TrendingProduct />
+      <Discover />
     </main>
   );
 };
