@@ -53,3 +53,84 @@ import HeroMenLanding from "@/public/images/matthew-cooksey-vHgeNO82JMc-unsplash
 export const MenImages = {
   HeroMenLanding,
 };
+
+
+
+// product listing
+import BigKidDriftGreen from "@/public/assets/images/product/BIG_KIDS_DRI-FIT_T_SHIRT_GREEN.jpg";
+import BigKidDriftBlue from "@/public/assets/images/product/BIG_KIDS_DRI-FIT_T_SHIRT_BLUE.jpg";
+import LongSleeve_White from "@/public/assets/images/product/HALLOWEEN_LONG_SLEEVE_WHITE_Men.jpg";
+import HillTshirtWhite from "@/public/assets/images/product/HILL_T_SHIRT_WHITE_Men.jpg";
+import HillTshirtBlack from "@/public/assets/images/product/HILL_T_SHIRT_BLACK_Men.jpg";
+import LONG_HORNS_BLACK from "@/public/assets/images/product/LONG_HORNS_BLACK.jpg";
+import LONG_HORNS_BROWN from "@/public/assets/images/product/LONG_HORNS_BROWN.jpg";
+import MEN_WOVEN_JACKET from "@/public/assets/images/product/MEN_WOVEN_JACKET.jpg";
+import MEN_WOVEN_JACKET1 from "@/public/assets/images/product/MEN_WOVEN_JACKET2.jpg";
+import MEN_WOVEN_JACKET2 from "@/public/assets/images/product/MEN_WOVEN_JACKET3.jpg";
+import MEN_WOVEN_JACKET3 from "@/public/assets/images/product/MEN_WOVEN_JACKET4.jpg";
+import MENS_WOVEN_PANTS_CREAM from "@/public/assets/images/product/MEN'S _WOVEN_ PANTS_CREAM.jpg";
+import MENS_WOVEN_PANTS_Gray from "@/public/assets/images/product/MEN'S _WOVEN_ PANTS_GRAY.jpg";
+import MENS_WOVEN_PANTS_LIGHTGRAY from "@/public/assets/images/product/MEN'S _WOVEN_ PANTS_LIGHTGRAY.jpg";
+import NIKE_AIR_PEGASUS_BLACK_Men from "@/public/assets/images/product/NIKE_AIR_PEGASUS_BLACK_Men.jpg";
+import NIKE_AIR_PEGASUS_GREEN from "@/public/assets/images/product/NIKE_AIR_PEGASUS_LIGHTGREEN_Men.jpg";
+import NIKE_AIR_PEGASUS_PINK from "@/public/assets/images/product/NIKE_AIR_PEGASUS_BLACK_Men-1.jpg";
+import NIKE_LIF from "@/public/assets/images/product/NIKE_LIFE.jpg";
+import WINDRUMMNER_BROWN from "@/public/assets/images/product/NIKE_TECH_BROWN_Men.jpg";
+import WINDRUMMNER_CREAM from "@/public/assets/images/product/NIKE_TECH_CREAM_Men.jpg";
+import WINDRUMMNER_GRAY from "@/public/assets/images/product/NIKE_TECH_GRAY_Men.jpg";
+import WINDRUMMNER_LIGHTGRAY from "@/public/assets/images/product/NIKE_TECH_WHITE_Men.jpg";
+import WOMEN_VAPORFLY from "@/public/assets/images/product/NIKE_VAPORFLY_NEXT1.jpg";
+import VAPORFLY_MEN_BLUE from "@/public/assets/images/product/NIKE_VAPORFLY_NEXT2_Men.jpg";
+import VAPORFLY_MEN_GREEN from "@/public/assets/images/product/NIKE_VAPORFLY_NEXT1_Men.jpg";
+import VAPORFLY_WOMEN_GREEN from "@/public/assets/images/product/NIKE_VAPORFLY_NEXT1.jpg";
+import VAPORFLY_WOMEN_PINK from "@/public/assets/images/product/NIKE_VAPORFLY_NEXT3.jpg";
+import NOCTA_BLUE from "@/public/assets/images/product/NOCTA_OPAL_BLUE.jpg";
+import NOCTA_GREEN from "@/public/assets/images/product/NOCTA_OPAL_GREEN.jpg";
+import PULLOVER_BLACK from "@/public/assets/images/product/PULLOVER_HOODIE_BLACK.jpg";
+import HI_SHOE_BLACK from "@/public/assets/images/product/SK8_HI_SHOE_BLACK_Men.jpg";
+import HI_SHOE_BLUE from "@/public/assets/images/product/SK8_HI_SHOE_BLUE_Men.jpg";
+import SKOOL_BLACK from "@/public/assets/images/product/SKOOL_SHOE_BLACK_Men.jpg";
+import SNAP_HAT from "@/public/assets/images/product/SNAPBACK_HAT_UNISEX.jpg";
+import WOMEN_SHORT_BLUE from "@/public/assets/images/product/WOMEN'_SHORT.jpg";
+import WOMEN_SHORT_GREEN from "@/public/assets/images/product/WOMEN'_SHORTGREEN.jpg";
+import WOMEN_SHORT_PINK from "@/public/assets/images/product/WOMEN'_SHORT_PINK.jpg";
+
+export const productsImages = {
+  BigKidDriftGreen,
+  BigKidDriftBlue,
+  LongSleeve_White,
+  HillTshirtWhite,
+  HillTshirtBlack,
+  LONG_HORNS_BLACK,
+  LONG_HORNS_BROWN,
+  MEN_WOVEN_JACKET,
+  MEN_WOVEN_JACKET1,
+  MEN_WOVEN_JACKET2,
+  MEN_WOVEN_JACKET3,
+  MENS_WOVEN_PANTS_CREAM,
+  MENS_WOVEN_PANTS_LIGHTGRAY,
+  NIKE_AIR_PEGASUS_BLACK_Men,
+  NIKE_AIR_PEGASUS_GREEN,
+  NIKE_AIR_PEGASUS_PINK,
+  NIKE_LIF,
+  WINDRUMMNER_BROWN,
+  WINDRUMMNER_CREAM,
+  WINDRUMMNER_GRAY,
+  WINDRUMMNER_LIGHTGRAY,
+  WOMEN_VAPORFLY,
+  VAPORFLY_MEN_BLUE,
+  VAPORFLY_MEN_GREEN,
+  VAPORFLY_WOMEN_GREEN,
+  VAPORFLY_WOMEN_PINK,
+  NOCTA_BLUE,
+  NOCTA_GREEN,
+  PULLOVER_BLACK,
+  HI_SHOE_BLACK,
+  HI_SHOE_BLUE,
+  SKOOL_BLACK,
+  SNAP_HAT,
+  WOMEN_SHORT_BLUE,
+  WOMEN_SHORT_GREEN,
+  WOMEN_SHORT_PINK,
+  MENS_WOVEN_PANTS_Gray,
+};

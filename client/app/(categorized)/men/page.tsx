@@ -6,7 +6,6 @@ const ImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
 import StickyNav from "@/components/common/Navbar/StickyNav";
 import React from "react";
 import { MenImages } from "@/constants/img.constants";
-import CustomBtn from "@/components/custom/CustomBtn";
 
 const page = () => {
   return (
@@ -24,7 +23,6 @@ const page = () => {
             sizes="(max-width:768px) 60vw, 80vw"
           />
         </div>
-        
       </div>
     </main>
   );
