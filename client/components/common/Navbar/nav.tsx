@@ -16,6 +16,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import CustomSearchBar from "@/components/custom/CustomSearchBar";
 import { useOutsideClick } from "@/hooks/use-outside-click";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [toggled, setToggled] = useState<boolean>(false);
@@ -81,7 +82,7 @@ const Navbar = () => {
 
   // use outside click
   useOutsideClick(searchContainerRef, handleToggleSearch);
-
+  const router = useRouter();
   return (
     <header className="bg-white h-[64px] flex items-center justify-between shadow-sm sticky top-0 inset-x-0 z-[900]">
       {/* desktop */}
@@ -113,14 +114,18 @@ const Navbar = () => {
             </div>
             <div>
               <CustomToolTip label="cart">
-                <Link href={"/cart"} className="relative">
-                  <span>
+                <div className="relative">
+                  <span
+                    onClick={() => {
+                      router.push("/cart");
+                    }}
+                  >
                     <ShoppingBag />
                   </span>
                   <span className="absolute -top-3 -right-2 text-sm font-bold">
                     0
                   </span>
-                </Link>
+                </div>
               </CustomToolTip>
             </div>
           </div>

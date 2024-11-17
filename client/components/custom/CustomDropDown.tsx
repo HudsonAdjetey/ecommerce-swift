@@ -11,6 +11,10 @@ import {
 import Link from "next/link";
 
 const menLink = [
+  {
+    title: "All",
+    path: "/men/all",
+  },
   { title: "Shirts", path: "/men/shirts" },
   { title: "Pants", path: "/men/pants" },
   { title: "Accessories", path: "/men/accessories" },

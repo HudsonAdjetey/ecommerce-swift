@@ -74,7 +74,7 @@ export const LandingPageContent: ProductListLandingProps[] = [
     category: "kids wear",
   },
   {
-    src: LandingImagesProduct.Kid4,
+    src: LandingImagesProduct.Kid4a,
     alt: "product image",
     title: "Converse classic shoes",
     description: "A stylish and comfortable classic shoes for kids.",
@@ -83,7 +83,7 @@ export const LandingPageContent: ProductListLandingProps[] = [
     link: "/product/converse-classic-shoes",
   },
   {
-    src: LandingImagesProduct.Kid3,
+    src: LandingImagesProduct.Kid3a,
     alt: "product image",
     title: "Nike sport wear classic",
     description: "A stylish and comfortable sport wear for kids.",
@@ -92,7 +92,7 @@ export const LandingPageContent: ProductListLandingProps[] = [
     link: "/product/nike-sport-wear-classic",
   },
   {
-    src: LandingImagesProduct.Kid2,
+    src: LandingImagesProduct.Kid2a,
     alt: "product image",
     title: "Adidas classic shoes",
     description: "A stylish and comfortable classic shoes for kids.",
@@ -101,7 +101,7 @@ export const LandingPageContent: ProductListLandingProps[] = [
     link: "/product/adidas-classic-shoes",
   },
   {
-    src: LandingImagesProduct.Kid1,
+    src: LandingImagesProduct.Kid1a,
     alt: "product image",
     title: "Puma classic shoes",
     description: "A stylish and comfortable classic shoes for kids.",
