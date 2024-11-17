@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useScroll from "@/hooks/useScroll";
 
-const StickyBase = () => {
+const StickyBase = ({ customText }: { customText: string }) => {
   const scrollY = useScroll();
   return (
     <div className="sticky z-50  top-[63px] flex items-center gap-6 justify-between px-4 2xl:px-10 bg-white py-2 left-0 right-0">
@@ -22,7 +22,7 @@ const StickyBase = () => {
           scrollY > 50 ? "text-xl" : "text-2xl"
         } transition-all duration-200`}
       >
-        New Arrivals
+        {customText}
       </h1>
       <div className="flex items-center gap-6">
         <DrawerFilter />

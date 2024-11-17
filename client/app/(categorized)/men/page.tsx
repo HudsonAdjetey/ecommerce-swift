@@ -12,7 +12,7 @@ import GridImageContent from "@/components/common/GridImageContent";
 import CardBoard from "@/components/custom/Card";
 import Footer from "@/components/common/Footer";
 
-const page = () => {
+const Page = () => {
   return (
     <main className="bg-white min-h-screen">
       <div className="pt-10">
@@ -103,4 +103,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

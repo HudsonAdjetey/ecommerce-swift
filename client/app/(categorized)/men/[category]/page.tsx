@@ -1,14 +1,17 @@
+import React from "react";
 import Footer from "@/components/common/Footer";
 import StickyBase from "@/components/common/Navbar/StickyBase";
-import React from "react";
+import ProductList from "@/components/scenes/productPage/ProductList";
+import { productsDummy } from "@/dummy/products";
 
-const page = () => {
+const Pages = () => {
   return (
     <main className="bg-white min-h-screen ">
-      <StickyBase />
+      <StickyBase customText="Men" />
+      <ProductList products={productsDummy} />
       <Footer />
     </main>
   );
 };
 
-export default page;
+export default Pages;

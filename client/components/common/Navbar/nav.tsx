@@ -1,4 +1,6 @@
 "use client";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
 import CustomAccount from "@/components/custom/CustomAccount";
 import CustomDropDown from "@/components/custom/CustomDropDown";
 
@@ -13,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import CustomSearchBar from "@/components/custom/CustomSearchBar";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { useRouter } from "next/navigation";
