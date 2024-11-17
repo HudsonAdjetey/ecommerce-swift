@@ -8,22 +8,31 @@ const ImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
 });
 const GridImageContent: React.FC<{
   imgUrl: StaticImageData;
-  textFirstString: string;
-  textSecond: string;
-  btnContent: string;
+  textFirstString?: string;
+  textSecond?: string;
+  btnContent?: string;
+  href?: string;
   cls?: string;
-}> = ({ imgUrl, cls, textFirstString, textSecond, btnContent }) => {
+}> = ({ imgUrl, cls, textFirstString, textSecond, btnContent, href }) => {
   return (
     <div className="relative w-full">
-      <ImageBlur src={imgUrl} alt="" className="w-full h-full" />
+      <ImageBlur
+        src={imgUrl}
+        alt=""
+        className="w-full h-full"
+        sizes="(max-width: 768px) 50vw, 70vw"
+      />
 
       <figure className="inset-0 bg-black/30 p-5 flex items-end absolute">
         <figcaption className="text-white flex-col gap-5 leading-7 items-start m-5">
           <p className="text-xl font-semibold">{textFirstString}</p>
           <p className="text-lg font-medium">{textSecond}</p>
-          <button className={cn("cs_btncustom mt-6 font-semibold", cls)}>
+          <a
+            href={href}
+            className={cn("cs_btncustom mt-6 py-5 font-semibold", cls)}
+          >
             {btnContent}
-          </button>
+          </a>
         </figcaption>
       </figure>
     </div>
