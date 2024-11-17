@@ -44,5 +44,12 @@ export const LandingImagesProduct = {
 };
 
 import BannerImage from "@/public/images/banner1.png";
-import BannerImage2 from "@/public/images/fachry-zella-devandra-WBDK76pCb9E-unsplash.jpg"
+import BannerImage2 from "@/public/images/fachry-zella-devandra-WBDK76pCb9E-unsplash.jpg";
 export const BannerImages = { BannerImage, BannerImage2 };
+
+// men hero images
+import HeroMenLanding from "@/public/images/matthew-cooksey-vHgeNO82JMc-unsplash.jpg";
+
+export const MenImages = {
+  HeroMenLanding,
+};
