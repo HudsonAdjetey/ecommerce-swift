@@ -137,6 +137,16 @@ import HeroMenEssentialWear from "@/public/images/men_acce-wear.jpg";
 import HeroMenEssentialShoe from "@/public/images/men_acce-Shoe.jpg";
 import HeroMenEssentialBag from "@/public/images/men_acce.jpg";
 
+import HeroWomenEssentialWear from "@/public/images/swift-wear-wome_wear.jpg";
+import HeroWomeEssentialShoe from "@/public/images/swift-women-shoe.jpg";
+import HeroWomenEssentialAccessories from "@/public/images/swift-women-accessories.jpg";
+
+export const HeroEssentialWome = {
+  HeroWomenEssentialWear,
+  HeroWomeEssentialShoe,
+  HeroWomenEssentialAccessories,
+};
+
 export const HeroMenEssential = {
   HeroMenEssentialWear,
   HeroMenEssentialShoe,
@@ -153,4 +163,12 @@ export const MenGrid = {
   MenGrid2,
   MenGrid3,
   MenGrid4,
+};
+
+import WomenMenGrid1 from "@/public/images/swift-wear-SBWC_A8WGCU.jpg";
+import WomenMenGrid2 from "@/public/images/swift-wear-f4RBYsY2hxA.jpg";
+
+export const WomenMenGrid = {
+  WomenMenGrid1,
+  WomenMenGrid2,
 };

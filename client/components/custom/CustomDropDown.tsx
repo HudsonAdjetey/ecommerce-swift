@@ -88,7 +88,7 @@ export const NavLinkContainer = () => {
 
         <NavigationMenuItem>
           <NavigationMenuTrigger className="text-gray-600 hover:text-black text-sm font-medium">
-            Women
+            <Link href={"/women"}>Women</Link>
           </NavigationMenuTrigger>
           <NavigationMenuContent className="bg-white">
             <ul className=" w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2  lg:w-[600px]  grid ">

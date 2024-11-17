@@ -15,7 +15,7 @@ const GridImageContent: React.FC<{
   cls?: string;
 }> = ({ imgUrl, cls, textFirstString, textSecond, btnContent, href }) => {
   return (
-    <div className="relative w-full">
+    <div className="relative h-full w-full">
       <ImageBlur
         src={imgUrl}
         alt=""

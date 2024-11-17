@@ -4,7 +4,7 @@ import CustomBtn from "../custom/CustomBtn";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col mt-20">
+    <footer className="flex flex-col mt-20 bg-white">
       <div className="flex items-center flex-wrap justify-between gap-6 p-10 border-b border-neutral-400">
         <div>
           <p className="text-2xl font-semibold">
