@@ -10,6 +10,53 @@ interface NavLinksDataProps {
   };
 }
 
+interface CartItem {
+  id: string | number;
+  name: string;
+  quantity: number;
+  price: number;
+  image: string | StaticImageData;
+  totalPrice: number;
+  attributes?: {
+    // like size, color
+    [key: string]: strin;
+  };
+  size?: string | number;
+}
+
+interface CartState {
+  items: CartItem[];
+  totalItems: number;
+  subTotal: number;
+  isLoading: boolean;
+  error: string | null;
+  currency: string;
+  totalPrice: number;
+}
+
+interface CartOrder {
+  id: string | number;
+  sizes?: string;
+  activeSize?: string;
+  color: string;
+  description?: string;
+  price: number;
+  image: string | StaticImageData;
+  category?: string;
+  name: string;
+  quantity?: number;
+  attributes?: {
+    [key: string]: string;
+  };
+  variants?: Product[];
+  brand?: string;
+  activityType?: string;
+  alt?: string;
+  availability?: boolean;
+  gender?: string;
+  totalPrice?: number;
+}
+
 // home products
 interface ProductListLandingProps {
   src: string | StaticImageData;
@@ -89,4 +136,18 @@ type ProdcutDescription = {
   subContent?: {
     [key: string]: string;
   };
+};
+
+type ActiveProductType = {
+  id: string;
+  name: string;
+  alt?: string;
+  color: string;
+  quantity: number;
+  size?: string;
+  image: string | StaticImageData;
+  price: number;
+  category?: string;
+  total?: number;
+  subTotal?: number;
 };
