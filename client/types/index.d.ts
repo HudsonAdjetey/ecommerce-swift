@@ -21,7 +21,6 @@ interface ProductListLandingProps {
   link: string;
 }
 
-
 type Product = {
   id: string | number;
   gender: string;
@@ -41,7 +40,9 @@ type ProductsProps = Product & {
   variants?: Product[];
 };
 
-
+type ListItems = ProductType & {
+  variants?: undefined;
+};
 
 type ProductType = {
   id: string;
@@ -76,7 +77,6 @@ type VariantsType = {
 type ProductContainerType = ProductType & {
   variants?: VariantsType[];
 };
-
 
 type ProdcutDescription = {
   id: string;

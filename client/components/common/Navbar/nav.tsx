@@ -153,6 +153,7 @@ const Navbar = () => {
           <CustomSearchBar
             handleToggle={handleToggleSearch}
             searchContainerRef={searchContainerRef}
+            toggleSearch={toggleSearch}
           />
         )}
       </nav>
