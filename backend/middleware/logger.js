@@ -5,7 +5,7 @@ const { format } = require("date-fns");
 const { v4: uuid } = require("uuid");
 const logEvent = async (msg, fileName) => {
   const timeStamp = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss");
-  const logEntry = `${timeStamp} ${uuid()} ${fileName}\n`;
+  const logEntry = `${msg} - ${timeStamp} ${uuid()} ${fileName}\n`;
 
   try {
     const logFilePath = path.join(__dirname, "..", logs);

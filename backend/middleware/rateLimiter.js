@@ -1,16 +1,17 @@
 const rateLimit = require("express-rate-limit");
-const redisClient = require("../config/redisConfig");
+const { logEvent } = require("./logger");
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  standardHeaders: "draft-7",
+  standardHeaders: true,
   legacyHeaders: false,
-  // redis
-  store: new RedisStore({
-    client: redisClient,
-    prefix: "rate-limiting:",
-    expire: 60 * 60 * 24,
-  }),
+  handler: (req, res, options) => {
+    logEvent(
+      `Rate limit exceeded ${options?.message}\t${req.method}`,
+      errorLog.log
+    )
+  }
 });
 
 module.exports = limiter;
