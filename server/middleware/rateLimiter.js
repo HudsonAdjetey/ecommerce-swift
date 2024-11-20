@@ -10,8 +10,8 @@ const limiter = rateLimit({
     logEvent(
       `Rate limit exceeded ${options?.message}\t${req.method}`,
       errorLog.log
-    )
-  }
+    );
+  },
 });
 
 module.exports = limiter;

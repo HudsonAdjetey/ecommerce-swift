@@ -1,10 +1,10 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
+
 const uri = process.env.CONN_STR;
 
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
-    strict: true,
     deprecationErrors: true,
   },
 });
@@ -12,13 +12,12 @@ const client = new MongoClient(uri, {
 const connectDB = async () => {
   try {
     await client.connect();
-    console.log("Connected to MongoDB");
-    await client.db("admin").command({ ping: 1 });
-    console.log("Connection established");
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Connected to mongodb server");
+    }
   } catch (error) {
-    console.log("Mongodb Error: ", error);
-  } finally {
-    await client.close();
+    console.error(error);
+    process.exit(1);
   }
 };
 
