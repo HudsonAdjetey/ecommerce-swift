@@ -3,12 +3,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const RedisSession = require("./utils/redisSession");
 const { logger } = require("./middleware/logger");
 const connectDB = require("./config/dbConfig");
 const { notFound, customErrorHandler } = require("./middleware/errorHandler");
 const initializeSubscribers = require("./entry");
 const limiter = require("./middleware/rateLimiter");
+const sessionRequest = require("./utils/session");
 
 // database connection configuration
 connectDB();
@@ -25,7 +25,7 @@ app.use(helmet());
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-app.use(RedisSession);
+app.use(sessionRequest);
 
 app.use(logger);
 

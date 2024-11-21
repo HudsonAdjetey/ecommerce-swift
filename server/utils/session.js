@@ -1,7 +1,6 @@
 const session = require("express-session");
 
-
-const RedisSession = session({
+const sessionRequest = session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
@@ -12,4 +11,4 @@ const RedisSession = session({
   },
 });
 
-module.exports = RedisSession;
+module.exports = sessionRequest;
