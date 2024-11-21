@@ -22,6 +22,7 @@ const UserSchema = new Schema(
         message: "Invalid email address",
       },
     },
+    imageUrl: string,
     registrationDate: {
       type: Date,
       default: Date.now,
@@ -47,6 +48,6 @@ UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ userId: 1 }, { unique: true });
 
 // Create model from schema
-const User = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model("User", UserSchema);
 
-module.exports = User;
+module.exports = UserModel;

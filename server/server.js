@@ -9,11 +9,12 @@ const { notFound, customErrorHandler } = require("./middleware/errorHandler");
 const initializeSubscribers = require("./entry");
 const limiter = require("./middleware/rateLimiter");
 const sessionRequest = require("./utils/session");
-
+const { clerkMiddleware } = require("@");
 // database connection configuration
 connectDB();
 
 const app = express();
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
@@ -36,6 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 initializeSubscribers();
 
 app.use(limiter);
+
+app.use(clerkMiddleware());
 
 // app.use(notFound());
 // app.use(customErrorHandler());
