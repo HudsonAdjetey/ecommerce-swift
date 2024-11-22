@@ -34,4 +34,9 @@ const deleteCache = async (key) => {
   }
 };
 
-module.exports = { generateCacheKey, setCache, getCache, deleteCache };
+module.exports = {
+  setCache,
+  getCache,
+  deleteCache,
+  generateCacheKey,
+};

@@ -1,41 +1,49 @@
 const asyncHandler = require("express-async-handler");
 const CartModel = require("../model/Cart.model");
 const ProductModel = require("../model/Product.model");
+const Redis = require("ioredis");
+const { generateCacheKey, setCache, getCache } = require("../utils/cacheUtils");
 
-const addToCart = asyncHandler(async (req, res, next) => {
+// Add Product to Cart
+const addToCart = asyncHandler(async (req, res) => {
+  const cacheKey = generateCacheKey("cart", req.user.userId);
+
   try {
     const { productId, variantId } = req.body;
-    // edge cases
+
     if (!productId || !variantId) {
-      return res.status(404).json({ message: "No product id" });
+      return res
+        .status(400)
+        .json({ message: "Product ID and Variant ID are required." });
     }
+
     const product = await ProductModel.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found." });
     }
+
     const matchingVariant = product.variants.find(
       (variant) => variant._id.toString() === variantId
     );
     if (!matchingVariant) {
-      return res.status(404).json({ message: "Variant not found" });
+      return res.status(404).json({ message: "Variant not found." });
     }
-    // create or update cart item
+
     let cart = await CartModel.findOne({ userId: req.user.userId });
     if (!cart) {
       cart = new CartModel({ userId: req.user.userId, items: [] });
     }
 
-    // check if cart contains items
-    const existingItem = cart.items.findIndex(
+    const existingItemIndex = cart.items.findIndex(
       (item) =>
         item.productId.toString() === productId &&
         item.variantId.toString() === variantId
     );
-    if (existingItem !== -1) {
-      cart.items[existingItem].quantity++;
-      //   subtotal
-      cart.items[existingItem].subtotal =
-        cart.items[existingItem].quantity * matchingVariant.price;
+
+    if (existingItemIndex !== -1) {
+      cart.items[existingItemIndex].quantity += 1;
+      cart.items[existingItemIndex].subtotal =
+        cart.items[existingItemIndex].quantity * matchingVariant.price;
     } else {
       cart.items.push({
         productId,
@@ -45,57 +53,87 @@ const addToCart = asyncHandler(async (req, res, next) => {
         subtotal: matchingVariant.price,
       });
     }
+
     await cart.save();
-    res.json({ message: "Item added to cart", cart });
+
+    // Update cache
+    await setCache(cacheKey, cart);
+
+    res.status(200).json({ message: "Item added to cart.", cart });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error adding to cart:", error);
+    res.status(500).json({ message: "Internal Server Error." });
   }
 });
 
+// Get Products from Cart
 const getProductFromCart = asyncHandler(async (req, res) => {
+  const cacheKey = generateCacheKey("cart", req.user.userId);
+
   try {
-    const cart = await CartModel.findOne({ userId: req.user.userId }).populate(
+    const userId = req.user.userId;
+
+    // Check Redis cache
+    const cachedCart = await getCache(cacheKey);
+    if (cachedCart) {
+      return res.status(200).json({ cart: JSON.parse(cachedCart) });
+    }
+
+    const cart = await CartModel.findOne({ userId }).populate(
       "items.productId"
     );
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+    if (!cart || cart.items.length === 0) {
+      return res.status(404).json({ message: "Cart is empty." });
     }
+
+    // Cache the cart data
+    await setCache(cacheKey, cart);
+
     res.status(200).json({ cart });
   } catch (error) {
     console.error("Error fetching cart:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error." });
   }
 });
 
-const removeProductFromCart = asyncHandler(async (req, res, next) => {
+// Remove Product from Cart
+const removeProductFromCart = asyncHandler(async (req, res) => {
+  const cacheKey = generateCacheKey("cart", req.user.userId);
+
   try {
     const { productId, variantId } = req.body;
+
     if (!productId || !variantId) {
       return res
         .status(400)
-        .json({ message: "Both productId and variantId are required" });
+        .json({ message: "Product ID and Variant ID are required." });
     }
-    const cart = await CartModel.findOneAndUpdate(
-      {
-        userId: req.user.userId,
-      },
-      {
-        $pull: { variantId, productId },
-      },
-      {
-        new: true,
-      }
-    ).populate("items.productId");
 
+    const cart = await CartModel.findOne({ userId: req.user.userId });
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json({ message: "Cart not found." });
     }
-    res.json({ message: "Item removed from cart" });
+
+    const itemIndex = cart.items.findIndex(
+      (item) =>
+        item.productId.toString() === productId &&
+        item.variantId.toString() === variantId
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Item not found in cart." });
+    }
+
+    cart.items.splice(itemIndex, 1);
+    await cart.save();
+
+    // Update cache
+    await setCache(cacheKey, cart);
+
+    res.status(200).json({ message: "Item removed from cart.", cart });
   } catch (error) {
-    console.error("Error removing product from cart:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-    next(error);
+    console.error("Error removing item from cart:", error);
+    res.status(500).json({ message: "Internal Server Error." });
   }
 });
 

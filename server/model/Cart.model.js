@@ -39,6 +39,10 @@ const CartSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    coupon: {
+      code: { type: String, default: null },
+      discount: { type: Number, default: 0 },
+    },
   },
   {
     timestamps: true,
@@ -66,4 +70,4 @@ CartSchema.pre("save", function (next) {
 
 const CartModel = mongoose.model("Cart", CartSchema);
 
-module.exports = CartModel;
+module.exports = CartModel; 
