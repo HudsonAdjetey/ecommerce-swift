@@ -13,6 +13,11 @@ const OrderSchema = new mongoose.Schema({
         ref: "Product",
         required: true,
       },
+      variantId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
       quantity: {
         type: Number,
         required: true,
@@ -57,4 +62,6 @@ const OrderSchema = new mongoose.Schema({
   },
 });
 
-const Order = mongoose.model("Order", OrderSchema);
+const OrderModel = mongoose.model("Order", OrderSchema);
+
+module.exports = OrderModel;

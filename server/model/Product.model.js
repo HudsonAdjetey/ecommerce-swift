@@ -8,7 +8,7 @@ const VariantSchema = new mongoose.Schema(
     },
     attributes: {
       type: Map,
-      of: String, // Example: { color: "Red", size: "M" }
+      of: String,
       required: true,
     },
     price: {
@@ -27,14 +27,14 @@ const VariantSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    images: [
-      {
-        type: String, // Image URL for the specific variant
-        required: false,
-      },
-    ],
+    image: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
-  { timestamps: true } // Tracks when the variant is added or updated
+  // Tracks when the variant is added or updated
+  { timestamps: true }
 );
 
 const ProductSchema = new mongoose.Schema(
@@ -62,11 +62,12 @@ const ProductSchema = new mongoose.Schema(
     tags: [
       // For SEO and filtering (e.g., "shoes", "formal", "leather")
       {
-        type: String, 
+        type: String,
         trim: true,
       },
     ],
-    variants: [VariantSchema], // Embedding the VariantSchema
+    // Embedding the VariantSchema
+    variants: [VariantSchema],
     ratings: {
       averageRating: {
         type: Number,
@@ -97,6 +98,6 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true } // Automatically adds createdAt and updatedAt
 );
 
-const Product = mongoose.model("Product", ProductSchema);
+const ProductModel = mongoose.model("Product", ProductSchema);
 
-module.exports = Product;
+module.exports = ProductModel;

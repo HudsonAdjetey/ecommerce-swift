@@ -40,6 +40,8 @@ app.use(limiter);
 
 app.use(clerkMiddleware());
 
+app.use("/api/authenticate", AuthRouter)
+
 // app.use(notFound());
 // app.use(customErrorHandler());
 

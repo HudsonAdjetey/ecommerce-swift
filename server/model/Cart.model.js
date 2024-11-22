@@ -14,6 +14,10 @@ const CartSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         },
+        variantId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
         quantity: {
           type: Number,
           required: true,
@@ -22,11 +26,11 @@ const CartSchema = new mongoose.Schema(
         },
         price: {
           type: Number,
-          required: true, 
+          required: true,
         },
         subtotal: {
           type: Number,
-          required: true, 
+          required: true,
         },
       },
     ],
@@ -36,7 +40,15 @@ const CartSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true } 
+  {
+    timestamps: true,
+    toJSON: {
+      transform: function (doc, ret) {
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
 );
 
 // Middleware to calculate subtotal and total price
@@ -52,6 +64,6 @@ CartSchema.pre("save", function (next) {
   next();
 });
 
-const Cart = mongoose.model("Cart", CartSchema);
+const CartModel = mongoose.model("Cart", CartSchema);
 
-module.exports = Cart;
+module.exports = CartModel;
