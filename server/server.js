@@ -10,9 +10,10 @@ const initializeSubscribers = require("./entry");
 const limiter = require("./middleware/rateLimiter");
 const sessionRequest = require("./utils/session");
 const { clerkMiddleware } = require("@");
+const s3 = require("./config/awsConfig");
 // database connection configuration
 connectDB();
-
+s3()
 const app = express();
 
 app.use(bodyParser.json());

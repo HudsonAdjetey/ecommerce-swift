@@ -11,7 +11,15 @@ const createOrder = asyncHandler(async (req, res, next) => {
     session.startTransaction();
 
     const { paymentStatus, shippingAddress } = req.body;
-
+    const validPaymentStatuses = [
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ];
+    if (!validPaymentStatuses.includes(paymentStatus)) {
+      return res.status(400).json({ message: "Invalid payment status" });
+    }
     // find the user's cart
     const cart = await CartModel.findOne({ userId: req.user.userId })
       .populate("items")
@@ -34,11 +42,11 @@ const createOrder = asyncHandler(async (req, res, next) => {
       shippingAddress,
       orderStatus: "Processing",
     });
+    await order.save({ session });
+
     await CartModel.findOneAndDelete({ userId: req.user.userId }).session(
       session
     );
-
-    await order.save({ session });
 
     //   Invalidate cached orders for the user
     const cacheKey = generateCacheKey("usersOrder", req.user.userId);
