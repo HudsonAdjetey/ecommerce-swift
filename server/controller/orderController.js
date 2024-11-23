@@ -1,99 +1,90 @@
 const asyncHandler = require("express-async-handler");
-const OrderModel = require("../model/Order.model");
 const CartModel = require("../model/Cart.model");
-const { generateCacheKey, setCache, getCache } = require("../utils/cacheUtils"); 
+const OrderModel = require("../model/Order.model");
+const { generateCacheKey, deleteCache } = require("../utils/redisUtils");
 
-// Create Order
 const createOrder = asyncHandler(async (req, res, next) => {
   try {
-    const { shippingAddress, paymentStatus } = req.body;
+    const { paymentStatus, shippingAddress } = req.body;
 
-    // Find the user's cart
+    // find the user's cart
     const cart = await CartModel.findOne({ userId: req.user.userId }).populate(
-      "items.productId"
+      "items"
     );
-
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({
-        message: "Cart is empty. Cannot create an order.",
+        message: "Cart is empty or not found",
       });
     }
 
-    // Calculate the total amount
-    const totalAmount = cart.items.reduce(
-      (acc, item) => acc + item.quantity * item.price,
-      0
-    );
+    // Calculate the total
+    const totalAmount = cart.totalAmount;
 
     // Create and save the order
     const order = new OrderModel({
       userId: req.user.userId,
-      items: cart.items.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        variantId: item.variantId,
-        // subtotal
-        subtotal: item.quantity * item.price,
-      })),
+      items: cart.items,
       totalAmount,
       paymentStatus: paymentStatus || "Pending",
       shippingAddress,
       orderStatus: "Processing",
     });
-
     await order.save();
 
-    // Invalidate cached orders for the user
-    const cacheKey = generateCacheKey("userOrders", req.user.userId);
+    //   Invalidate cached orders for the user
+    const cacheKey = generateCacheKey("usersOrder", req.user.userId);
     await deleteCache(cacheKey);
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Order created successfully",
       order,
     });
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Error creating order", error);
     res.status(500).json({
-      message: "Error creating order.",
+      message: "Error creating order",
     });
     next(error);
   }
 });
 
-// Get User Orders
-const getUserOrders = asyncHandler(async (req, res, next) => {
+const getUserOrder = asyncHandler(async (req, res, next) => {
   try {
-    const cacheKey = generateCacheKey("userOrders", req.user.userId);
+    const cacheKey = generateCacheKey("usersOrder", req.user.userId);
+    const cachedOrder = await getCache(cacheKey);
+    if (cachedOrder) {
+      console.log("Retrieved order from cache");
 
-    // Check for cached data
-    let orders = await getCache(cacheKey);
-    if (!orders) {
-      console.log("Cache miss: fetching orders from database...");
-      orders = await OrderModel.find({ userId: req.user.userId }).populate(
-        "items.productId"
-      );
-
-      if (!orders || orders.length === 0) {
-        return res.status(404).json({
-          message: "No orders found.",
-        });
-      }
-
-      // Cache the orders
-      await setCache(cacheKey, orders);
-    } else {
-      console.log("Cache hit: serving cached orders.");
+      return res.status(200).json({
+        message: "Order retrieved from cache",
+        order: cachedOrder,
+      });
     }
+    console.log("Cache miss");
+    const order = await OrderModel.findOne({
+      userId: req.user.userId,
+    }).populate("items");
 
-    res.status(200).json({ orders });
+    if (!order || order.items.length === 0) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+    await setCache(cacheKey, order);
+    res.status(200).json({
+      message: "Order retrieved successfully",
+      order,
+    });
   } catch (error) {
-    console.error("Error fetching orders:", error);
+    console.error("Error retrieving order", error);
     res.status(500).json({
-      message: "Error fetching orders.",
+      message: "Error retrieving order",
     });
     next(error);
   }
 });
 
-module.exports = { createOrder, getUserOrders };
+module.exports = {
+  createOrder,
+  getUserOrder,
+};

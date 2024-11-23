@@ -3,34 +3,34 @@ const UserModel = require("../model/User.model");
 
 const userAuthenticate = asyncHandler(async (req, res) => {
   try {
-    const { user } = req.auth; 
+    const { user } = req.auth;
 
     // Find user by email
-    let isUser = await UserModel.findOne({ email: user.primaryEmailAddress });
+    const findUser = await UserModel.findOne({
+      email: user.primaryEmailAddress,
+    });
 
-    if (!isUser) {
-      // Register the user in the database
-      isUser = new UserModel({
-        userId: user.id,
-        email: user.primaryEmailAddress,
+    if (!findUser) {
+      // register the user in the database
+      const newUser = new UserModel({
         firstName: user.firstName,
         lastName: user.lastName,
+        userId: user.id,
+        email: user.primaryEmailAddress,
         imageUrl: user.imageUrl,
       });
-      await isUser.save();
-
+      await newUser.save();
       return res.status(201).json({
-        message: "User registered successfully",
-        user: isUser,
+        message: "User created successfully",
+        user: newUser,
       });
     }
-
-    // Return authenticated user
     return res.status(200).json({
       message: "User authenticated successfully",
-      user: isUser,
+      user: findUser,
     });
   } catch (error) {
+    console.error(error?.message || error);
     return res.status(500).json({
       message: "Server Error",
       error: error.message,

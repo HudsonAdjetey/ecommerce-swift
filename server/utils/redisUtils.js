@@ -1,6 +1,6 @@
 const redisClient = require("../config/redisConfig");
 
-export const generateCacheKey = (prefix, id) => `${prefix}:${id}`;
+const generateCacheKey = (prefix, id) => `${prefix}:${id}`;
 
 const setCache = async (key, value, ttl = 3600) => {
   try {

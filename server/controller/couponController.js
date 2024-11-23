@@ -2,56 +2,50 @@ const asyncHandler = require("express-async-handler");
 const CouponModel = require("../model/Coupon.model");
 const CartModel = require("../model/Cart.model");
 
-// apply coupon
-
 const applyCoupon = asyncHandler(async (req, res, next) => {
   try {
-    const { couponCode } = req.body;
+    const { code } = req.body;
 
-    // validate coupon code
-    const coupon = await CouponModel.findOne({ code: couponCode });
-    if (!coupon) {
-      return res.status(400).json({ message: "Invalid coupon code" });
-    }
-    // check if coupon has expired
+    const coupon = await CouponModel.findOne({ code });
+    // check if the coupon has expired
     if (new Date() > coupon.expiresAt) {
+      await CouponModel.findOneAndDelete({ code });
+
       return res.status(400).json({ message: "Coupon has expired" });
     }
-    //   fetch users cart
+
     const cart = await CartModel.findOne({ userId: req.user.userId });
-    if (!cart || cart.length === 0) {
-      return res.status(400).json({ message: "Your cart is empty" });
+    if (!cart) {
+      return res.status(400).json({ message: "Cart not found" });
     }
 
-    //   check minimum cart value
-    const cartTotal = cart.items.reduce((total, item) => total + item.subtotal);
-    if (cartTotal < coupon.minCartValue) {
-      return res.status(400).json({
-        message: "Your cart value is below the minimum required value",
-      });
+    //   check for minimum cart value
+    const cartTotal = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
+    if (cartTotal < coupon.minValue) {
+      return res.status(400).json({ message: "Cart value is too low" });
     }
 
-    // calculate the discount value
+    //   calculate the discount
     let discount = 0;
     if (coupon.type === "percentage") {
       discount = cartTotal * (coupon.value / 100);
     } else if (coupon.type === "fixed") {
       discount = coupon.value;
     }
-    discount = Math.min(discount, cartToal);
+    discount = Math.min(discount, cartTotal);
 
-    //   update the cart with coupon details
+    //   update the cart
     cart.coupon = {
-      code: coupon.code,
+      code,
       discount,
     };
-    cart.totalPrice = cartTotal - discount;
+    cart.totalPrice = cart.totalPrice - discount;
     await cart.save();
-    res.status(200).json({ message: "Coupon applied successfully" });
+    res.status(201).json({ message: "Coupon applied successfully" });
   } catch (error) {
-    console.error("Error applying coupon ", error);
+    console.error(error?.message || error);
     res.status(500).json({
-      message: "Error applying coupon",
+      message: "Failed to apply coupon",
     });
     next(error);
   }
@@ -59,26 +53,31 @@ const applyCoupon = asyncHandler(async (req, res, next) => {
 
 const removeCoupon = asyncHandler(async (req, res, next) => {
   try {
-    const cart = await CartModel.findOne({ userId: req.user.id });
-    if (!cart || !cart.coupon.code) {
-      return res.status(400).json({ message: "No coupon applied" });
+    const cart = await CartModel.findOne({ userId: req.user.userId });
+    if (!cart) {
+      return res.status(400).json({ message: "Cart not found" });
     }
-    //   remove coupon and recalculate the total
-    cart.coupon = { code: null, discount: 0 };
-    cart.totalPrice = cart.items.reduce(
-      (total, item) => total + item.subtotal,
-      0
-    );
+    cart.coupon = { discount: 0, code: null };
+    cart.totalPrice = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
+    await cart.save();
+
     res.status(200).json({
       message: "Coupon removed successfully",
-      cart: cart.items.map((item) => ({ ...item, subtotal: item.price })),
+      cart: cart.items.map((item) => ({
+        ...item,
+        subtotal: item.price * item.quantity,
+      })),
     });
   } catch (error) {
-    console.error("Error removing coupon ", error);
+    console.error("error removing coupon ", error);
     res.status(500).json({
       message: "Error removing coupon",
     });
+    next(error);
   }
 });
 
-module.exports = { applyCoupon, removeCoupon };
+module.exports = {
+  applyCoupon,
+  removeCoupon,
+};

@@ -1,49 +1,47 @@
 const asyncHandler = require("express-async-handler");
 const { startSession } = require("mongoose");
 const CartModel = require("../model/Cart.model");
-const OrderModel = require("../model/Order.model");
 const { Paystack } = require("paystack-sdk");
-const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY);
+const OrderModel = require("../model/Order.model");
+const paystack = new Paystack(process.env.PAYSTACK_PRIVATE_KEY);
 
 const initPayment = asyncHandler(async (req, res, next) => {
   const session = await startSession();
-  // Start a session
   try {
     session.startTransaction();
 
     const order = await OrderModel.findOne({ userId: req.user.userId })
       .populate("items")
       .session(session);
+
     if (!order || order.items.length === 0) {
       return res.status(400).json({ message: "No items in order" });
     }
-
     const totalAmount = order.totalAmount;
     if (totalAmount <= 0) {
-      return res.status(400).json({ message: "Invalid total amount" });
+      return res.status(400).json({
+        message: "Invalid order amount",
+      });
     }
 
-    // Create payment intent
+    //   create payment intent
     const transactionResponse = await paystack.transaction.initialize({
-      apiKey: process.env.PUBLIC_KEY,
+      apiKey: process.env.PAYSTACK_PUBLIC_KEY,
       email: req.user.primaryEmailAddress,
-      amount: totalAmount * 100,
-      reference: req.body.reference,
+      amount: totalAmount,
+      currency: "GHS",
+      reference: order._id.toString(),
     });
 
     if (transactionResponse?.status !== "success") {
-      throw new Error("Payment initialization failed");
+      return res
+        .status(400)
+        .json({ message: "Failed to create payment intent" });
     }
 
-    // Update order with payment details
-    order.paymentIntentId = transactionResponse.data.id;
-    await order.save({ session });
-
-    // Remove order and cart
-    await OrderModel.deleteOne({ userId: req.user.userId }).session(session);
-    await CartModel.findOneAndDelete({ userId: req.user.userId }).session(
-      session
-    );
+    order.paymentIntentId = transactionResponse?.data.id;
+    order.status = "Processing";
+    await order.save();
 
     // Commit transaction
     await session.commitTransaction();
@@ -53,14 +51,10 @@ const initPayment = asyncHandler(async (req, res, next) => {
       data: transactionResponse.data,
     });
   } catch (error) {
-    console.error("Error initializing payment: ", error);
-    // Abort transaction in case of failure
+    console.error("Error initializing intent", error);
     await session.abortTransaction();
-    return res.status(500).json({
-      message: "Error initializing payment intent",
-    });
+    return res.status(500).json({ message: "Internal Server Error" });
   } finally {
-    // Always end session
     session.endSession();
   }
 });
