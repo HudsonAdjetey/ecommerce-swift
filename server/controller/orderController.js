@@ -2,15 +2,20 @@ const asyncHandler = require("express-async-handler");
 const CartModel = require("../model/Cart.model");
 const OrderModel = require("../model/Order.model");
 const { generateCacheKey, deleteCache } = require("../utils/redisUtils");
+const { startSession } = require("mongoose");
 
 const createOrder = asyncHandler(async (req, res, next) => {
+  const session = await startSession();
+
   try {
+    session.startTransaction();
+
     const { paymentStatus, shippingAddress } = req.body;
 
     // find the user's cart
-    const cart = await CartModel.findOne({ userId: req.user.userId }).populate(
-      "items"
-    );
+    const cart = await CartModel.findOne({ userId: req.user.userId })
+      .populate("items")
+      .session(session);
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({
         message: "Cart is empty or not found",
@@ -29,11 +34,17 @@ const createOrder = asyncHandler(async (req, res, next) => {
       shippingAddress,
       orderStatus: "Processing",
     });
-    await order.save();
+    await CartModel.findOneAndDelete({ userId: req.user.userId }).session(
+      session
+    );
+
+    await order.save({ session });
 
     //   Invalidate cached orders for the user
     const cacheKey = generateCacheKey("usersOrder", req.user.userId);
     await deleteCache(cacheKey);
+
+    await session.commitTransaction();
 
     res.status(200).json({
       message: "Order created successfully",
@@ -41,10 +52,13 @@ const createOrder = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating order", error);
+    await session.abortTransaction();
+
     res.status(500).json({
       message: "Error creating order",
     });
-    next(error);
+  } finally {
+    session.endSession();
   }
 });
 

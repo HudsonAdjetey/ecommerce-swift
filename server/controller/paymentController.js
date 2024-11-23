@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const { startSession } = require("mongoose");
-const CartModel = require("../model/Cart.model");
 const { Paystack } = require("paystack-sdk");
 const OrderModel = require("../model/Order.model");
 const paystack = new Paystack(process.env.PAYSTACK_PRIVATE_KEY);
@@ -41,7 +40,7 @@ const initPayment = asyncHandler(async (req, res, next) => {
 
     order.paymentIntentId = transactionResponse?.data.id;
     order.status = "Processing";
-    await order.save();
+    await order.save({ session });
 
     // Commit transaction
     await session.commitTransaction();
