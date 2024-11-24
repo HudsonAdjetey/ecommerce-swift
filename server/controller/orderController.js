@@ -3,6 +3,7 @@ const CartModel = require("../model/Cart.model");
 const OrderModel = require("../model/Order.model");
 const { generateCacheKey, deleteCache } = require("../utils/redisUtils");
 const { startSession } = require("mongoose");
+const { publishMessage } = require("../pubsub/publisher");
 
 const createOrder = asyncHandler(async (req, res, next) => {
   const session = await startSession();
@@ -51,7 +52,7 @@ const createOrder = asyncHandler(async (req, res, next) => {
     //   Invalidate cached orders for the user
     const cacheKey = generateCacheKey("usersOrder", req.user.userId);
     await deleteCache(cacheKey);
-
+    publishMessage("create_order", order);
     await session.commitTransaction();
 
     res.status(200).json({
@@ -93,6 +94,7 @@ const getUserOrder = asyncHandler(async (req, res, next) => {
       });
     }
     await setCache(cacheKey, order);
+    publishMessage("get_order", order);
     res.status(200).json({
       message: "Order retrieved successfully",
       order,
@@ -106,7 +108,59 @@ const getUserOrder = asyncHandler(async (req, res, next) => {
   }
 });
 
+const updateOrder = asyncHandler(async (req, res) => {
+  try {
+    const order = await OrderModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
+    await setCache(generateCacheKey("usersOrder", order.userId), order);
+    publishMessage("order_updated", order);
+
+    res.status(200).json({
+      message: "Order updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating order", error);
+    res.status(500).json({
+      message: "An error occurred while updating the order",
+      error: error.message,
+    });
+  }
+});
+
+const deleteOrder = asyncHandler(async (req, res) => {
+  try {
+    const order = await OrderModel.findByIdAndDelete(req.params.id);
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+    await setCache(generateCacheKey("usersOrder", order.userId), null);
+    publishMessage("order_deleted", order);
+    res.status(200).json({
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting order", error);
+    res.status(500).json({
+      message: "An error occurred while deleting the order",
+    });
+  }
+});
+
 module.exports = {
   createOrder,
   getUserOrder,
+  updateOrder,
+  deleteOrder,
 };

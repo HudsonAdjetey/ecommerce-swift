@@ -6,7 +6,15 @@ const subscribeToChannel = require("./pubsub/subscriber");
  *
  * @param {Array} channels - List of Redis channels to subscribe to.
  */
-const initializeSubscribers = async function (channels = ["order_updates"]) {
+const initializeSubscribers = async function (
+  channels = [
+    "create_order",
+    "review_created",
+    "reviews_retrieved",
+    "review_deleted",
+    "get_order",
+  ]
+) {
   try {
     console.log("Initializing subscribers...");
 

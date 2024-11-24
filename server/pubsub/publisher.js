@@ -67,7 +67,11 @@ const publishMessage = async (
         `Max retries reached for message publishing to channel "${channel}"`
       );
       throw error;
-    //   send message to their email address
+      //   send message to their email address
     }
   }
+};
+
+module.exports = {
+  publishMessage,
 };

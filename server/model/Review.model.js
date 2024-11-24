@@ -24,6 +24,9 @@ const ReviewSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  imgUrl: {
+    type: String,
+  },
 });
 
 const ReviewModel = mongoose.model("Review", ReviewSchema);
