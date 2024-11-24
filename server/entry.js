@@ -13,6 +13,8 @@ const initializeSubscribers = async function (
     "reviews_retrieved",
     "review_deleted",
     "get_order",
+    "cart_updated",
+    "get_cart",
   ]
 ) {
   try {

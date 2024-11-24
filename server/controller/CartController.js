@@ -83,6 +83,8 @@ const getProductFromCart = asyncHandler(async (req, res, next) => {
     }
 
     await setCache(cacheKey, cart);
+    // publisher
+    publishMessage("get_cart", { userId });
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {
     console.error(error);
@@ -126,6 +128,8 @@ const removeProductFromCart = asyncHandler(async (req, res, next) => {
     await cart.save();
 
     await setCache(cacheKey, cart);
+    // publisher
+    publishMessage("remove_cart", cart);
     res.status(200).json({ message: "Items removed from cart", cart });
   } catch (error) {
     console.error(error);
@@ -168,4 +172,9 @@ const updateCart = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { addToCart, getProductFromCart, removeProductFromCart };
+module.exports = {
+  addToCart,
+  getProductFromCart,
+  removeProductFromCart,
+  updateCart,
+};
