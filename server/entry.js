@@ -17,6 +17,10 @@ const initializeSubscribers = async function (
     "get_cart",
     "order_updated",
     "order_deleted",
+    "create_product",
+    "getProducts",
+    "getProductsId",
+    "update_product",
   ]
 ) {
   try {
