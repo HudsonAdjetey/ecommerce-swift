@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const ProductModel = require("../model/Product.model");
 const { publishMessage } = require("../pubsub/publisher");
+const { generateCacheKey } = require("../utils/redisUtils");
 
 // Create a new product
 const createProducts = asyncHandler(async (req, res, next) => {
@@ -78,6 +79,8 @@ const getProducts = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ message: "No products found" });
     }
 
+    publishMessage("getProducts", products);
+
     // Respond with products
     res.status(200).json({
       products,
@@ -99,6 +102,8 @@ const getProductById = asyncHandler(async (req, res, next) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+    publishMessage("getProductsId", product);
+
     res
       .status(200)
       .json({ product, message: "Product retrieved successfully" });
@@ -119,6 +124,8 @@ const updateProductById = asyncHandler(async (req, res, next) => {
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
+    publishMessage("update_product", product);
+
     res.status(200).json({
       product: updatedProduct,
       message: "Product updated successfully",
