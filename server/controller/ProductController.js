@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const ProductModel = require("../model/Product.model");
 const { publishMessage } = require("../pubsub/publisher");
-const { generateCacheKey } = require("../utils/redisUtils");
 
 // Create a new product
 const createProducts = asyncHandler(async (req, res, next) => {

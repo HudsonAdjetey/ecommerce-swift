@@ -66,6 +66,7 @@ const createOrder = asyncHandler(async (req, res, next) => {
     res.status(500).json({
       message: "Error creating order",
     });
+    next(error);
   } finally {
     session.endSession();
   }
