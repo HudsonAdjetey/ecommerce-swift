@@ -204,8 +204,14 @@ const performProductSearch = asyncHandler(async (req, res, next) => {
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
-
-    // sorting
+    // Sorting
+    if (sort) {
+      const [key, order] = sort.split(":");
+      pipeline.push({ $sort: { [key]: order === "desc" ? -1 : 1 } });
+    } else {
+      pipeline.push({ $sort: { _id: -1 } }); // Default sort (newest first)
+    }
+    // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
     pipeline.push({ $skip: skip });
     pipeline.push({ $limit: parseInt(limit) });
