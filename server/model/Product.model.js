@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const VariantSchema = new mongoose.Schema(
   {
     variantId: {
-      type: mongoose.Schema.Types.ObjectId, // Unique identifier for the variant
+      type: mongoose.Schema.Types.ObjectId,
       auto: true,
     },
     attributes: {
@@ -22,7 +22,7 @@ const VariantSchema = new mongoose.Schema(
       min: 0,
     },
     sku: {
-      type: String, // Unique SKU for the variant
+      type: String,
       required: true,
       unique: true,
       trim: true,
@@ -85,17 +85,21 @@ const ProductSchema = new mongoose.Schema(
       enum: ["active", "inactive", "draft"],
       default: "active",
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt
+  {
+    timestamps: true,
+    toJSON: {
+      transform: function (doc, ret) {
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
 );
 
 const ProductModel = mongoose.model("Product", ProductSchema);

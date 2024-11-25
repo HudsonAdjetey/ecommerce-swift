@@ -1,13 +1,21 @@
 const mongoose = require("mongoose");
 
-const CategorySchema = new mongoose.Schema(
+const BrandSchema = new mongoose.Schema(
   {
     name: String,
     description: String,
     products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    image: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
-    timestamps: true,
     toJSON: {
       transform: function (doc, ret) {
         delete ret.__v;
@@ -16,7 +24,6 @@ const CategorySchema = new mongoose.Schema(
     },
   }
 );
+const BrandModel = mongoose.model("Brand", BrandSchema);
 
-const CategoryModel = mongoose.model("Category", CategorySchema);
-
-module.exports = CategoryModel;
+module.exports = BrandModel;

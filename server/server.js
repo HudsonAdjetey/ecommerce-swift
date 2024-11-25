@@ -9,11 +9,13 @@ const { notFound, customErrorHandler } = require("./middleware/errorHandler");
 const initializeSubscribers = require("./entry");
 const limiter = require("./middleware/rateLimiter");
 const sessionRequest = require("./utils/session");
-const { clerkMiddleware } = require("@");
-const s3 = require("./config/awsConfig");
+const { clerkMiddleware } = require("@clerk/express");
+const CartRouter = require("./router/CartRouter");
+const AuthRouter = require("./router/AuthRouter");
+const CouponRouter = require("./router/CouponRouter");
+const ProductRouter = require("./router/ProductUploadRouter");
 // database connection configuration
 connectDB();
-s3()
 const app = express();
 
 app.use(bodyParser.json());
@@ -39,10 +41,17 @@ initializeSubscribers();
 
 app.use(limiter);
 
-app.use(clerkMiddleware());
+app.use(
+  clerkMiddleware({
+    publishableKey: "pk_test_cG9saXRlLW11dHQtMzMuY2xlcmsuYWNjb3VudHMuZGV2JA",
+    secretKey: "sk_test_V0KEROMU0DYUSi5csrZWG8FBD0HagPFriqpm9OIW2M",
+  })
+);
 
-app.use("/api/authenticate", AuthRouter)
-
+app.use("/api/auth/", AuthRouter);
+app.use("/api/cart/", CartRouter);
+app.use("/api/coupon", CouponRouter);
+app.use("/", ProductRouter);
 // app.use(notFound());
 // app.use(customErrorHandler());
 

@@ -1,5 +1,3 @@
-const AWS = require("aws-sdk");
-
 AWS.config.update({
   region: "eu-central-1",
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -36,10 +34,10 @@ const downloadFile = async (bucketName, fileName) => {
   try {
     const data = await s3.getObject(params).promise();
     console.log(`File downloaded successfully: ${fileName}`);
-    return data.Body; // Return the file content
+    return data.Body;
   } catch (error) {
     console.error("Error downloading file:", error);
-    throw error; // Re-throw the error for further handling if needed
+    throw error;
   }
 };
 

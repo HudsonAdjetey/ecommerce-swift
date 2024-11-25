@@ -22,7 +22,7 @@ const UserSchema = new Schema(
         message: "Invalid email address",
       },
     },
-    imageUrl: string,
+    imageUrl: String,
     registrationDate: {
       type: Date,
       default: Date.now,

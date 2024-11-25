@@ -6,12 +6,12 @@ const { v4: uuid } = require("uuid");
 
 const logEvent = async (msg, fileName) => {
   const timeStamp = format(new Date(), "yyyy-MM-dd'T'HH:mm:ss");
-  const logEntry = `${timeStamp} - ${msg} ${uuid} ${fileName}`;
+  const logEntry = `${timeStamp} - ${msg} ${uuid()} ${fileName}`;
 
   try {
-    const filePath = path.join(__dirname, "..", logs);
+    const filePath = path.join(__dirname, "..", "logs");
 
-    if (!fs.existSync(filePath)) {
+    if (!fs.existsSync(filePath)) {
       await fsPromises.mkdir(filePath);
     }
     await fsPromises.appendFile(path.join(filePath, fileName), logEntry);

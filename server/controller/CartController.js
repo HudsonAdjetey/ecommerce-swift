@@ -84,7 +84,7 @@ const getProductFromCart = asyncHandler(async (req, res, next) => {
 
     await setCache(cacheKey, cart);
     // publisher
-    publishMessage("get_cart", { userId });
+    publishMessage("get_cart", cart);
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {
     console.error(error);

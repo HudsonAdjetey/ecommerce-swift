@@ -15,6 +15,8 @@ const initializeSubscribers = async function (
     "get_order",
     "cart_updated",
     "get_cart",
+    "order_updated",
+    "order_deleted",
   ]
 ) {
   try {
