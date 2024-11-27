@@ -5,6 +5,7 @@ const UserSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
+    fullName: { type: String, required: true },
     userId: {
       type: String,
       required: true,
@@ -40,9 +41,7 @@ const UserSchema = new Schema(
 );
 
 // Virtual field for fullName
-UserSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
+
 
 UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ userId: 1 }, { unique: true });

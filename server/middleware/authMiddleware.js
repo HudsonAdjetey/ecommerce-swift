@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const UserModel = require("../model/User.model");
+const UserModel = require("../model/UserModel");
 
 const protectedRouteMiddleware = asyncHandler(async (req, res, next) => {
   try {

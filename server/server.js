@@ -15,10 +15,14 @@ const AuthRouter = require("./router/AuthRouter");
 const CouponRouter = require("./router/CouponRouter");
 const ProductRouter = require("./router/ProductUploadRouter");
 const OrderRouter = require("./router/OrderRouter");
-const PaymentRouter = require("./router/PaymentRouter").default;
+const PaymentRouter = require("./router/PaymentRouter");
+const cors = require("cors")
+const corsOptions = require("./config/corsOptions");
+
 // database connection configuration
 connectDB();
 const app = express();
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(

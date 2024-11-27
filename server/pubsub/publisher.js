@@ -38,12 +38,12 @@ const publishMessage = async (
     message.id = messageId;
     message.timeStamp = new Date().toISOString();
 
-    console.log(`Publishing message to ${channel}: ${message}`);
+    // console.log(`Publishing message to ${channel}: ${message}`);
     await publisherClient.publish(channel, JSON.stringify(message));
 
-    console.log(
+    /* console.log(
       `Message ${messageId} successfully published to channel "${channel}"`
-    );
+    ); */
   } catch (error) {
     console.error(
       `Error publishing message to channel "${channel}": ${error.message}`

@@ -1,24 +1,20 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { default: mongoose } = require("mongoose");
 
-const uri = process.env.CONN_STR;
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    deprecationErrors: true,
-  },
-});
 
 const connectDB = async () => {
-  try {
-    await client.connect();
-    if (process.env.NODE_ENV !== "production") {
-      console.log("Connected to mongodb server");
-    }
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
-  }
+ const URL = process.env.CONN_STR;
+ try {
+   const conn = await mongoose.connect(URL, {
+     // useNewUrlParser: true,
+   });
+   if (process.env.NODE_ENV == "development") {
+     console.log(`MongoDB connected: ${conn.connection.host}`);
+   }
+ } catch (error) {
+   console.log(`Error: ${error.message}`);
+   process.exit(1);
+ }
 };
 
 module.exports = connectDB;

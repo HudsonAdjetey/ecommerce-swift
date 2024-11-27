@@ -7,7 +7,7 @@ const {
   getCache,
 } = require("../utils/redisUtils");
 const { publishMessage } = require("../pubsub/publisher");
-const UserModel = require("../model/User.model");
+const UserModel = require("../model/UserModel");
 
 const createAreaView = asyncHandler(async (req, res) => {
   try {

@@ -50,14 +50,18 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      type: "string",
       required: true,
+      set: function (value) {
+        return value.toLowerCase();
+      },
     },
     brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brand",
-      required: false,
+      type: "string",
+      required: true,
+      set: function (value) {
+        return value.toLowerCase();
+      },
     },
     tags: [
       // For SEO and filtering (e.g., "shoes", "formal", "leather")
@@ -80,6 +84,7 @@ const ProductSchema = new mongoose.Schema(
         default: 0,
       },
     },
+    type: String,
     status: {
       type: String,
       enum: ["active", "inactive", "draft"],

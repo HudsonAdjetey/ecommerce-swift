@@ -21,6 +21,7 @@ const initializeSubscribers = async function (
     "getProducts",
     "getProductsId",
     "update_product",
+    "user_created",
   ]
 ) {
   try {

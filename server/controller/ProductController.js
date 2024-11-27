@@ -5,24 +5,59 @@ const { publishMessage } = require("../pubsub/publisher");
 // Create a new product
 const createProducts = asyncHandler(async (req, res, next) => {
   try {
-    const { name, description, category, brand, tags, variants } = req.body;
+    const { name, description, category, brand, tags, variants, types } =
+      req.body;
 
     // Validate required fields
     if (!name || !description || !category || !brand) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    // Check if product already exists
+    const existingProduct = await ProductModel.findOne({ name });
+
+    if (existingProduct) {
+      // If the product exists, we want to add the new variants (ensureing no duplicate SKUs)
+      const existingVariantSkus = existingProduct.variants.map(
+        (variant) => variant.sku
+      );
+
+      // Filter out variants that already exist (based on SKU)
+      const newVariants = variants.filter(
+        (variant) => !existingVariantSkus.includes(variant.sku)
+      );
+
+      if (newVariants.length > 0) {
+        existingProduct.variants.push(...newVariants); 
+        await existingProduct.save();
+
+        return res
+          .status(200)
+          .json({
+            message: "Product updated with new variants",
+            product: existingProduct,
+          });
+      } else {
+        return res
+          .status(400)
+          .json({ message: "No new variants to add (SKUs already exist)" });
+      }
+    }
+
+    // If product doesn't exist, create a new one
     const product = new ProductModel({
       name,
       description,
       category,
       brand,
       tags,
+      types,
       variants,
     });
+
     await product.save();
 
-    // Publish message
+    // Publish message (you can replace with your own messaging system)
     publishMessage("create_product", product);
 
     res.status(201).json({ product, message: "Product created successfully" });
