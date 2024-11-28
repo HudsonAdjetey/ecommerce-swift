@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 const ImageBlurComponent = dynamic(
@@ -23,7 +23,7 @@ const ProductCard: React.FC<{
       {/* Main product image */}
       <span
         onClick={() => {
-          router.push(`/products/${product.category}?id=${product.id}`);
+          router.push(`/products/${product.category}?id=${product._id}`);
         }}
       >
         {product.variants &&
@@ -60,7 +60,7 @@ const ProductCard: React.FC<{
                   {" "}
                   <ImageBlurComponent
                     src={variant.image}
-                    alt={variant.alt}
+                    alt={product.name}
                     width={50}
                     height={50}
                     className="w-[50px] h-[50px] object-cover"

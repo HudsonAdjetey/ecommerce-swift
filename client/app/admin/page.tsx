@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import axios from "axios";
-import ImageBlur from "@/components/common/ImageBlur";
 
 const page = memo(() => {
   const [fileContent, setFileContent] = useState<string>("");

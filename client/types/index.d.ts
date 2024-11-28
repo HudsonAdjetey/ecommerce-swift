@@ -167,6 +167,7 @@ interface ProductInfoDetails {
 }
 
 type ProductsProps = {
+  _id: string;
   name: string;
   typeMain: string;
   availablePrices: string[];
