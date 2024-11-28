@@ -10,16 +10,11 @@ const ProductCard: React.FC<{
   product: ProductsProps;
   isVariant?: boolean;
 }> = ({ product }) => {
-  const [activeImage, setActiveImage] = useState(product.image);
-
+  const [activeImage, setActiveImage] = useState("");
   // Reset the image when the product changes
-  useEffect(() => {
-    setActiveImage(product.image);
-  }, [product]);
-
-  const handleMouseEnter = (variantImg: string) => {
-    setActiveImage(variantImg);
-  };
+  const [activePrice, setActivePrice] = useState(
+    (product.variants && product.variants[0].price) || ""
+  );
 
   const router = useRouter();
 
@@ -31,13 +26,19 @@ const ProductCard: React.FC<{
           router.push(`/products/${product.category}?id=${product.id}`);
         }}
       >
-        <ImageBlurComponent
-          src={activeImage}
-          alt={product.name}
-          width={300}
-          height={300}
-          className="w-full"
-        />
+        {product.variants &&
+          product.variants.slice(0, 1).map((img, idx) => {
+            return (
+              <ImageBlurComponent
+                key={idx}
+                src={activeImage || img.image}
+                alt={product.name}
+                width={300}
+                height={300}
+                className="w-full"
+              />
+            );
+          })}
       </span>
 
       {/* Brand and product variants */}
@@ -46,34 +47,25 @@ const ProductCard: React.FC<{
 
         {/* Variants (if any) */}
         {product.variants && (
-          <div className="flex items-center mb-2 space-x-3">
-            <div
-              onClick={() => handleMouseEnter(product.image)}
-              onMouseEnter={() => handleMouseEnter(product.image)}
-            >
-              <ImageBlurComponent
-                src={product.image}
-                alt={product.name}
-                width={300}
-                height={300}
-                className=" w-[50px] h-[50px] object-cover"
-              />
-            </div>
-            {product.variants.slice(0, 1).map((variant, idx) => (
-              <div
-                key={idx}
-                onMouseEnter={() => handleMouseEnter(variant.image)}
-                onClick={() => handleMouseEnter(variant.image)}
-                className="variant-thumbnail  flex"
-              >
-                {" "}
-                <ImageBlurComponent
-                  src={variant.image}
-                  alt={variant.alt}
-                  width={50}
-                  height={50}
-                  className="w-[50px] h-[50px] object-cover"
-                />
+          <div className="inline-flex items-center mb-2 space-x-3">
+            {product.variants.slice(0, 3).map((variant, idx) => (
+              <div key={idx}>
+                <div
+                  onClick={() => {
+                    setActiveImage(variant.image);
+                    setActivePrice(variant.price);
+                  }}
+                  className="variant-thumbnail"
+                >
+                  {" "}
+                  <ImageBlurComponent
+                    src={variant.image}
+                    alt={variant.alt}
+                    width={50}
+                    height={50}
+                    className="w-[50px] h-[50px] object-cover"
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -87,7 +79,7 @@ const ProductCard: React.FC<{
         </h3>
         <p className="">
           GHS{" "}
-          {product.price.toLocaleString("en", {
+          {activePrice.toLocaleString("en", {
             minimumFractionDigits: 2,
           })}
         </p>

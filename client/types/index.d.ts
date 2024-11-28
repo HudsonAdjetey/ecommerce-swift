@@ -151,3 +151,33 @@ type ActiveProductType = {
   total?: number;
   subTotal?: number;
 };
+
+interface Variant {
+  variantId?: string;
+  attributes: Map<string, string>;
+  price: number;
+  stock: number;
+  sku: string;
+  size: string[];
+  image: StaticImageData;
+}
+
+interface ProductInfoDetails {
+  infoId: string;
+  features: Array<{
+    header: string;
+    description: string;
+  }>;
+}
+
+type ProductsProps = {
+  name: string;
+  typeMain: string;
+  availablePrices: string[];
+  description: string;
+  contentInfo: ProductInfoDetails;
+  category: string;
+  brand: string;
+  tags: string[];
+  variants: Variant[];
+};

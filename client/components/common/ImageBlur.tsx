@@ -29,7 +29,9 @@ const ImageBlur: React.FC<ImageProps> = ({
       loading="lazy"
       placeholder="blur"
       decoding="async"
-      blurDataURL={typeof src === "string" ? src : undefined}
+      blurDataURL={
+        "https://cdn.pixabay.com/photo/2015/06/24/02/12/the-blurred-819388_1280.jpg"
+      }
       sizes={sizes}
       {...props}
     />
