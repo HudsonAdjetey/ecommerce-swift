@@ -102,11 +102,13 @@ type ProductType = {
   brand: string;
   country: string;
   information?: ProdcutDescription;
+  gender: string;
+
   available: boolean;
 };
 
 type VariantsType = {
-  id: string;
+  id: number;
   sizesAvailable: string[];
   color: string;
   image: string | StaticImageData;
@@ -149,7 +151,7 @@ type ActiveProductType = {
 };
 
 interface Variant {
-  id?: string;
+  id?: number;
   variantId?: string;
   _id: string;
   attributes: Map<string, string>;
