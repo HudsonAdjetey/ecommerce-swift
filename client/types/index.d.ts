@@ -149,6 +149,7 @@ type ActiveProductType = {
 };
 
 interface Variant {
+  id?: string;
   variantId?: string;
   _id: string;
   attributes: Map<string, string>;
