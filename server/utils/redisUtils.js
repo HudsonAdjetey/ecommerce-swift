@@ -1,7 +1,6 @@
 const redisClient = require("../config/redisConfig");
 
 const generateCacheKey = (prefix, id) => `${prefix}:${id}`;
-
 const setCache = async (key, value, ttl = 3600) => {
   try {
     if (ttl <= 0) throw new Error("TTL must be a positive number");
@@ -24,6 +23,7 @@ const getCache = async (key) => {
     console.error(`Error getting cache for key: ${key}`, error);
   }
 };
+
 
 const deleteCache = async (key) => {
   try {

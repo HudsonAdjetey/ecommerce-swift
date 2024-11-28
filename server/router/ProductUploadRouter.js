@@ -10,5 +10,5 @@ ProductRouter.get("/get-products", getProducts)
 ProductRouter.get("/get-productsId/:productId", getProductById)
 ProductRouter.put("/update-product/:productId", updateProductById)
 ProductRouter.delete("/delete-product/:productId", deleteProductById)
-ProductRouter.get("/search-products/:productId", performProductSearch)
+ProductRouter.get("/search-products", performProductSearch)
 module.exports = ProductRouter;

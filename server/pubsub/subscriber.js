@@ -1,72 +1,109 @@
 const redisClient = require("../config/redisConfig");
-const fs = require("fs");
+const fs = require("fs").promises; // Use fs.promises for async/await support
 
-const FallbackFile = "../log/fallback.json";
-
+const FallbackFile = "../logs/fallback.json";
 const MAX_RETRIES = 5;
-const RETRY_DELAY = 3000;
+const RETRY_DELAY = 3000; // 3 seconds retry delay
+
+// A single Redis subscriber client that will be reused across subscriptions
+let redisSubscriberClient;
 
 /**
- * Tries to subscribe to a Redis channel with a retry mechanism.
- * If the subscription fails, it retries a configurable number of times.
- * If all retries fail, it sends an alert and stores the failed subscription.
+ * Ensures that the Redis subscriber connection is open.
+ * Re-uses the same connection for all subscriptions.
+ */
+const ensurePublisherConnection = async () => {
+  try {
+    // If the subscriber client is not created, create it
+    if (!redisSubscriberClient) {
+      redisSubscriberClient = redisClient.duplicate();
+    }
+
+    // Check if the client is connected, if not, connect it
+    if (!redisSubscriberClient.isOpen) {
+      await redisSubscriberClient.connect();
+    }
+  } catch (error) {
+    console.error(`Error connecting to Redis publisher: ${error.message}`);
+    throw error;
+  }
+};
+
+/**
+ * Subscribes to a Redis channel with retry logic. If the subscription fails,
+ * it retries up to a set number of times and stores the failed subscription if
+ * all retries fail.
  *
  * @param {string} channel - The Redis channel to subscribe to.
  * @param {number} retriesLeft - Number of retry attempts left.
  */
-
-const subscribeToChannel = async function (channel, retriesLeft = MAX_RETRIES) {
+const subscribeToChannel = async (channel, retriesLeft = MAX_RETRIES) => {
   try {
-    const redisSubscriberClient = redisClient.duplicate();
-    await redisSubscriberClient.connect();
+    // Ensure the Redis subscriber connection is open
+    await ensurePublisherConnection();
 
-    await redisSubscriberClient.subscribe(channel, async function (message) {
+    // Subscribe to the specified channel
+    await redisSubscriberClient.subscribe(channel, async (message) => {
       try {
         const parsedMessage = JSON.parse(message);
-        console.log(`Received message: ${parsedMessage}`);
-        // handle dynamic messages with twillo
+        console.log(`Received message on channel "${channel}":`, parsedMessage);
+        // Process the message, e.g., send notifications or handle events here
       } catch (error) {
-        console.error(`Error parsing message on ${channel}: ${error?.message}`);
+        console.error(
+          `Error parsing message on channel "${channel}": ${error.message}`
+        );
       }
     });
 
-    console.log(`Subscribed to channel ${channel} successfully`);
+    console.log(`Successfully subscribed to channel "${channel}"`);
   } catch (error) {
-    console.error(`Error subscribing to channel ${channel}: ${error?.message}`);
+    console.error(
+      `Error subscribing to channel "${channel}": ${error.message}`
+    );
+
+    // If there are retries left, attempt to subscribe again after a delay
     if (retriesLeft > 0) {
       console.log(
-        `Retrying subscription to channel ${channel} in ${RETRY_DELAY}ms...`
+        `Retrying subscription to channel "${channel}" in ${RETRY_DELAY}ms...`
       );
       setTimeout(async () => {
         await subscribeToChannel(channel, retriesLeft - 1);
       }, RETRY_DELAY);
     } else {
-      console.log("All retries failed. Storing failed subscription.");
-      if (process.env !== "production") {
-        storedFailedSubscrption();
-      }
+      // If all retries fail, store the failed subscription and alert
+      console.log(
+        `All retries failed for channel "${channel}". Storing failed subscription.`
+      );
+      await storeFailedSubscription(channel, error);
     }
   }
 };
 
-const storedFailedSubscrption = (channel, error) => {
-  const failedSubcription = {
+/**
+ * Stores the failed subscription attempt in a fallback file (for non-production environments).
+ *
+ * @param {string} channel - The Redis channel that failed to subscribe.
+ * @param {Error} error - The error that occurred during subscription.
+ */
+const storeFailedSubscription = async (channel, error) => {
+  const failedSubscription = {
     channel,
     error: error.message || error,
-    timeStamp: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
   };
-  // store failed subscription in database
-  fs.appendile(
-    FallbackFile,
-    JSON.stringify(failedSubcription) + "\n",
-    (err) => {
-      if (err) {
-        console.error("Error storing failed subscription:", err);
-      } else {
-        console.log("Failed subscription stored successfully");
-      }
+
+  try {
+    // Only store failed subscriptions in non-production environments
+    if (process.env.NODE_ENV !== "production") {
+      await fs.appendFile(
+        FallbackFile,
+        JSON.stringify(failedSubscription) + "\n"
+      );
+      console.log("Failed subscription stored successfully");
     }
-  );
+  } catch (fileError) {
+    console.error("Error storing failed subscription:", fileError);
+  }
 };
 
 module.exports = subscribeToChannel;

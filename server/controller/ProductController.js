@@ -1,66 +1,71 @@
 const asyncHandler = require("express-async-handler");
 const ProductModel = require("../model/Product.model");
 const { publishMessage } = require("../pubsub/publisher");
-
+const { generateCacheKey, setCache, getCache } = require("../utils/redisUtils");
 // Create a new product
 const createProducts = asyncHandler(async (req, res, next) => {
   try {
-    const { name, description, category, brand, tags, variants, types } =
-      req.body;
+    const products = req.body;
 
-    // Validate required fields
-    if (!name || !description || !category || !brand) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: "No products provided" });
     }
 
-    // Check if product already exists
-    const existingProduct = await ProductModel.findOne({ name });
+    // Validate each product's required fields
+    for (let product of products) {
+      const { name, description, category, brand, variants } = product;
 
-    if (existingProduct) {
-      // If the product exists, we want to add the new variants (ensureing no duplicate SKUs)
-      const existingVariantSkus = existingProduct.variants.map(
-        (variant) => variant.sku
-      );
-
-      // Filter out variants that already exist (based on SKU)
-      const newVariants = variants.filter(
-        (variant) => !existingVariantSkus.includes(variant.sku)
-      );
-
-      if (newVariants.length > 0) {
-        existingProduct.variants.push(...newVariants); 
-        await existingProduct.save();
-
-        return res
-          .status(200)
-          .json({
-            message: "Product updated with new variants",
-            product: existingProduct,
-          });
-      } else {
+      if (!name || !description || !category || !brand) {
         return res
           .status(400)
-          .json({ message: "No new variants to add (SKUs already exist)" });
+          .json({ message: "Missing required fields in one or more products" });
       }
     }
 
-    // If product doesn't exist, create a new one
-    const product = new ProductModel({
-      name,
-      description,
-      category,
-      brand,
-      tags,
-      types,
-      variants,
+    // Check if any of the products already exist and need variants added
+    for (let product of products) {
+      const existingProduct = await ProductModel.findOne({
+        name: product.name,
+      });
+
+      if (existingProduct) {
+        // If product exists, ensure no duplicate SKUs in variants
+        const existingVariantSkus = existingProduct.variants.map(
+          (variant) => variant.sku
+        );
+
+        const newVariants = product.variants.filter(
+          (variant) => !existingVariantSkus.includes(variant.sku)
+        );
+
+        if (newVariants.length > 0) {
+          existingProduct.variants.push(...newVariants);
+          await existingProduct.save();
+        }
+      }
+    }
+
+    // Insert new products (if they do not exist already)
+    const productsToInsert = products.filter(async (product) => {
+      const existingProduct = await ProductModel.findOne({
+        name: product.name,
+      });
+      return !existingProduct;
     });
 
-    await product.save();
+    if (productsToInsert.length > 0) {
+      // Insert new products using insertMany
+      await ProductModel.insertMany(productsToInsert);
+    }
 
     // Publish message (you can replace with your own messaging system)
-    publishMessage("create_product", product);
+    productsToInsert.forEach((product) => {
+      publishMessage("create_product", "products created successfully");
+    });
 
-    res.status(201).json({ product, message: "Product created successfully" });
+    res.status(201).json({
+      message: "Products created successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -69,23 +74,37 @@ const createProducts = asyncHandler(async (req, res, next) => {
 
 // Get all products
 const getProducts = asyncHandler(async (req, res, next) => {
-  try {
-    const { category, brand, tags, minPrice, maxPrice, sort, page, limit } =
-      req.query;
+  const { category, brand, tags, minPrice, maxPrice, sort, page, limit,typeMain } =
+    req.query;
 
-    // Build the pipeline
+  // Generate a unique cache key based on all query parameters
+  const cacheKey = generateCacheKey(`getProducts`, Object.values(req.query));
+
+  try {
+    // Check if the cache exists for the current query parameters
+
+    const cachedProducts = await getCache(cacheKey);
+
+    if (cachedProducts) {
+      return res.status(200).json({
+        message: "Products fetched from cache",
+        products: cachedProducts && JSON.parse(cachedProducts),
+      });
+    }
+
     const pipeline = [];
 
-    // Filtering Stage (only add if query parameters exist)
     const matchStage = {};
     if (category) matchStage.category = category;
     if (brand) matchStage.brand = brand;
+    if(typeMain)matchStage.typeMain = typeMain
     if (tags) matchStage.tags = { $in: tags.split(",") };
     if (minPrice || maxPrice) {
       matchStage.price = {};
       if (minPrice) matchStage.price.$gte = parseFloat(minPrice);
       if (maxPrice) matchStage.price.$lte = parseFloat(maxPrice);
     }
+
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
@@ -93,19 +112,25 @@ const getProducts = asyncHandler(async (req, res, next) => {
     // Sorting Stage
     if (sort) {
       const [key, order] = sort.split(":");
-      const sortStage = { [key]: order === "desc" ? -1 : 1 };
-      pipeline.push({ $sort: sortStage });
+      const validSortKeys = ["name", "price", "rating"];
+      if (validSortKeys.includes(key)) {
+        const sortStage = { [key]: order === "desc" ? -1 : 1 };
+        pipeline.push({ $sort: sortStage });
+      }
     }
 
     // Pagination
-    const pageNumber = parseInt(page) || 1;
-    const pageSize = parseInt(limit) || 10;
+    const pageNumber = parseInt(page, 10) || 1;
+    const pageSize = parseInt(limit, 10) || 10;
     const skip = (pageNumber - 1) * pageSize;
 
     pipeline.push({ $skip: skip });
     pipeline.push({ $limit: pageSize });
 
-    // Fetch products
+    // Fetch total count of products without pagination (for pagination UI)
+    const totalCount = await ProductModel.countDocuments(matchStage);
+
+    // Fetch the products based on the query parameters
     const products = await ProductModel.aggregate(pipeline);
 
     // Check if products exist
@@ -113,14 +138,14 @@ const getProducts = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ message: "No products found" });
     }
 
-    publishMessage("getProducts", products);
-
-    // Respond with products
+    // Cache the products with the total count for future requests
+    await setCache(cacheKey, JSON.stringify(products));
+    publishMessage("getProducts", "products fetched successfully");
     res.status(200).json({
       products,
       page: pageNumber,
       limit: pageSize,
-      total: products.length,
+      total: totalCount,
       message: "Products retrieved successfully",
     });
   } catch (error) {
@@ -132,10 +157,23 @@ const getProducts = asyncHandler(async (req, res, next) => {
 // Get a single product by ID
 const getProductById = asyncHandler(async (req, res, next) => {
   try {
+    const cachekey = generateCacheKey(`getProductsId`, req.params.productId);
+
+    const cacheProducts = await getCache(cachekey);
+    if (cacheProducts) {
+      return res.status(200).json({
+        message: "Products fetched from cache",
+        products: cacheProducts,
+      });
+    }
+
     const product = await ProductModel.findById(req.params.productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
+
+    await setCache(cachekey, product);
+
     publishMessage("getProductsId", product);
 
     res
