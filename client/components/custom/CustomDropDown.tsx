@@ -26,6 +26,7 @@ const menLink = [
 ];
 
 const womenLink = [
+  { title: "All", path: "/women/all" },
   { title: "Dresses", path: "/women/dresses" },
   { title: "Skirts", path: "/women/skirts" },
   { title: "Pants", path: "/women/pants" },

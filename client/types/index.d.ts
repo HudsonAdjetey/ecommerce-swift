@@ -83,10 +83,6 @@ type Product = {
   category?: string;
 };
 
-type ProductsProps = Product & {
-  variants?: Product[];
-};
-
 type ListItems = ProductType & {
   variants?: undefined;
 };
