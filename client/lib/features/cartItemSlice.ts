@@ -16,6 +16,8 @@ export const saveCartItemsToSessionStorage = (items: CartItemProps) => {
   }
 };
 
+
+
 const updateCartTotals = (items: CartProps[]) => {
   const totalPrice = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -28,7 +30,7 @@ const updateCartTotals = (items: CartProps[]) => {
   };
 };
 
-const initialState: CartItemProps = {
+const initialState:CartItemProps = {
   items: loadCartFromSession(),
   totalItems: 0,
   subtotal: 0,
@@ -42,7 +44,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
+    addToCart: (state, action: PayloadAction<CartProps>) => {
       const existingItem = state.items.findIndex(
         (item) =>
           item.productId === action.payload.productId &&
@@ -52,7 +54,6 @@ const cartSlice = createSlice({
         state.items[existingItem].quantity += action.payload.quantity;
         state.items[existingItem].subtotal =
           state.items[existingItem].price * state.items[existingItem].quantity;
-        state.items[existingItem].name = action.payload.name;
       } else {
         state.items.push({
           ...action.payload,
@@ -115,24 +116,5 @@ const cartSlice = createSlice({
         currency: state.currency,
       });
     },
-    clearCart: (state) => {
-      state.items = [];
-      state.totalItems = 0;
-      state.subtotal = 0;
-      state.totalPrice = 0;
-      saveCartItemsToSessionStorage({
-        items: state.items,
-        totalItems: 0,
-        subtotal: 0,
-        totalPrice: 0,
-        currency: state.currency,
-      });
-    },
   },
 });
-
-export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
-
-export const { addToCart, clearCart, removeFromCart, updateCart } =
-  cartSlice.actions;
-export default cartSlice.reducer;

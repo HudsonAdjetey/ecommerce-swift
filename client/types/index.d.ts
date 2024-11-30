@@ -19,11 +19,38 @@ interface CartItem {
   totalPrice: number;
   attributes?: {
     // like size, color
-    [key: string]: strin;
+    [key: string]: string;
   };
   size?: string | number;
 }
 
+interface CartProps {
+  productId: string;
+  variantId: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  size: string;
+  color: string;
+  _id: string;
+  image: string | StaticImageData;
+  coupon: {
+    code: string;
+    discount: number;
+    error?: string;
+  };
+  image?: StaticImageData | string;
+  name?: string;
+}
+interface CartItemProps {
+  items: CartProps[];
+  totalPrice: number;
+  currency?: string;
+  totalItems: number;
+  subtotal: number;
+  isLoading?: boolean;
+  error?: string | null;
+}
 interface CartState {
   items: CartItem[];
   totalItems: number;
@@ -163,7 +190,6 @@ interface Variant {
 }
 
 interface ProductInfoDetails {
-  infoId: string;
   features: Array<{
     header: string;
     description: string;
@@ -174,11 +200,15 @@ type ProductsProps = {
   _id: string;
   name: string;
   typeMain: string;
-  availablePrices: string[];
+  availableSizes: string[];
   description: string;
   contentInfo: ProductInfoDetails;
   category: string;
   brand: string;
   tags: string[];
   variants: Variant[];
+  subContent?: {
+    [key: string]: string;
+  };
+  size?: string;
 };

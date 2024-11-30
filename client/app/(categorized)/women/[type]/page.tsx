@@ -44,7 +44,7 @@ const Pages = () => {
       );
       setProductsContainer(filteredProducts);
     }
-  }, [useFetchQuery.data, searchParams.type]);
+  }, [useFetchQuery.data, searchParams.type, useFetchQuery.isSuccess]);
 
   return (
     <main className="bg-white overflow-x-clip min-h-screen relative">

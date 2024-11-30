@@ -23,7 +23,9 @@ const ProductCard: React.FC<{
       {/* Main product image */}
       <span
         onClick={() => {
-          router.push(`/products/${product.category}?id=${product._id}`);
+          router.push(
+            `/products/${product.category}/?type=${product.typeMain}&id=${product._id}`
+          );
         }}
       >
         {product.variants &&

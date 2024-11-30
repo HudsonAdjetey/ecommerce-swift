@@ -1,11 +1,7 @@
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const TabsDescription = ({
-  info,
-}: {
-  info: ProdcutDescription | undefined;
-}) => {
+const TabsDescription = ({ info }: { info: ProductsProps | undefined }) => {
   return (
     info && (
       <section className="bg-white container p-10 ">
@@ -17,10 +13,10 @@ const TabsDescription = ({
           <TabsContent value="description">
             <div className="my-10">
               <h3 className="text-lg font-medium pb-1 underline">
-                About Nike {info.title}
+                About Nike {info.name}
               </h3>
               <article>
-                <p className="my-4 text-base">{info.content}</p>
+                <p className="my-4 text-base">{info.description}</p>
                 <h3 className="text-lg font-medium pb-1 underline">
                   Key Features
                 </h3>
@@ -34,8 +30,8 @@ const TabsDescription = ({
                       sacrificing support.
                     </span>
                   </li>
-                  {info.features &&
-                    info.features.map((feature, idx) => {
+                  {info.contentInfo &&
+                    info.contentInfo.features.map((feature, idx) => {
                       return (
                         <li key={idx}>
                           <span className="font-medium block">

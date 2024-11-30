@@ -1,104 +1,94 @@
-// "use client";
-// import Footer from "@/components/common/Footer";
-// import InfoCustomer from "@/components/scenes/productPage/InfoCustomer";
-// import InfoDisplay from "@/components/scenes/productPage/InfoDisplay";
-// import SimilarProducts from "@/components/scenes/productPage/SimilarProducts";
-// import TabsDescription from "@/components/scenes/productPage/TabsDescription";
-// import { informationProducts, productsContainer } from "@/dummy/products";
-// import { useSearchParams } from "next/navigation";
-// import { useEffect, useState } from "react";
+"use client";
+import Footer from "@/components/common/Footer";
+import InfoCustomer from "@/components/scenes/productPage/InfoCustomer";
+import InfoDisplay from "@/components/scenes/productPage/InfoDisplay";
+import SimilarProducts from "@/components/scenes/productPage/SimilarProducts";
+import TabsDescription from "@/components/scenes/productPage/TabsDescription";
+import { informationProducts, productsContainer } from "@/dummy/products";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-// const Page = () => {
-//   const searchId = useSearchParams().get("id");
+const Page = () => {
+  const searchId = useSearchParams().get("id");
+  const [productContainer, setProductContainer] = useState<
+    ProductsProps | undefined
+  >(undefined);
+  const fetchProductById = useQuery({
+    queryKey: ["product", searchId],
+    queryFn: async () => {
+      const response = await axios.get(
+        `http://localhost:5913/api/product/get-productsId/${searchId}`
+      );
 
-//   const [activeProduct, setActiveProduct] = useState<ActiveProductType>({
-//     id: "",
-//     name: "",
-//     color: "",
-//     quantity: 1,
-//     size: "",
-//     image: "",
-//     price: 0,
-//     total: 0,
-//   });
+      return await response.data;
+    },
+    refetchInterval: 3600000,
+  });
+  const [loading, setIsLoading] = useState(false);
+  const searchType = useSearchParams().get("type");
+  const [activeProduct, setActiveProduct] = useState<ActiveProductType>({
+    id: "",
+    name: "",
+    color: "",
+    quantity: 1,
+    size: "",
+    image: "",
+    price: 0,
+    total: 0,
+  });
 
-//   const [selectedSize, setSelectedSize] = useState<string>("");
-//   const currentProduct = productsContainer.find(
-//     (product) => product.id === searchId
-//   );
-//   const [activeId, setActiveId] = useState(currentProduct?.id);
+  const [selectedSize, setSelectedSize] = useState<string>("");
 
-//   const productInfo = informationProducts.find(
-//     (info) => info.refId === currentProduct?.id
-//   );
+  useEffect(() => {
+    if (fetchProductById.isSuccess && fetchProductById.data) {
+      if (
+        fetchProductById.data.products.typeMain === searchType &&
+        fetchProductById.data.products._id === searchId
+      ) {
+        setProductContainer(fetchProductById.data.products);
+      } else {
+        setProductContainer(undefined);
+      }
+    }
+  }, [fetchProductById.data, searchType, fetchProductById.isSuccess]);
 
-//   useEffect(() => {
-//     setActiveId(currentProduct?.id);
-//   }, [currentProduct?.id]);
+  useEffect(() => {
+    if (fetchProductById.isLoading) {
+      setIsLoading(true);
+    } else if (fetchProductById.isSuccess || fetchProductById.isError) {
+      setIsLoading(false);
+    }
+  }, [
+    fetchProductById.isLoading,
+    fetchProductById.isSuccess,
+    fetchProductById.isError,
+  ]);
 
-//   // handleActiveId
-//   const handleActiveId = (id: string) => {
-//     setActiveId(id);
-//   };
-
-//   useEffect(() => {
-//     if (currentProduct) {
-//       const selectedPro =
-//         currentProduct.id === activeId
-//           ? currentProduct
-//           : currentProduct.variants?.find((vari) => vari.id === activeId);
-
-//       if (selectedPro) {
-//         setActiveProduct({
-//           id: selectedPro.id,
-//           name: selectedPro.name,
-//           color: selectedPro.color,
-//           quantity: currentProduct.quantity || 1,
-//           size: selectedSize || currentProduct.sizesAvailable[0],
-//           image: selectedPro.image,
-//           price: currentProduct.price,
-//           total: currentProduct.price,
-//           alt: selectedPro.alt,
-//           category: currentProduct.category,
-//         });
-//       }
-//     }
-//   }, [currentProduct, selectedSize, activeId]);
-
-//   return (
-//     <main className="bg-white">
-//       {/* Top section for product view */}
-//       <InfoDisplay
-//         activeProduct={activeProduct}
-//         currentProduct={currentProduct}
-//         selectedSize={selectedSize}
-//         setSelectedSize={setSelectedSize}
-//         activId={activeId}
-//         handleActiveId={handleActiveId}
-//       />
-//       {/* Product description */}
-//       <TabsDescription info={productInfo} />
-
-//       {/* Recommended products */}
-//       <SimilarProducts />
-
-//       {/* Customer information */}
-//       <InfoCustomer />
-
-//       {/* Footer */}
-//       <Footer />
-//     </main>
-//   );
-// };
-
-// export default Page;
-
-import React from 'react'
-
-const page = () => {
   return (
-    <div>page</div>
-  )
-}
+    <main className="bg-white">
+      {/* Top section for product view */}
+      <InfoDisplay
+        activeProduct={activeProduct}
+        currentProduct={productContainer ? productContainer : undefined}
+        selectedSize={selectedSize}
+        setSelectedSize={setSelectedSize}
+        isLoading= {loading}
+      />
+      {/* Product description */}
+      <TabsDescription info={productContainer} />
 
-export default page
+      {/* Recommended products */}
+      <SimilarProducts />
+
+      {/* Customer information */}
+      <InfoCustomer />
+
+      {/* Footer */}
+      <Footer />
+    </main>
+  );
+};
+
+export default Page;

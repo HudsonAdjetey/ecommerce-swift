@@ -6,21 +6,49 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 
+type ItemToCart = {
+  productId: string;
+  variantId: string;
+  price: number;
+  image: StaticImageData | string;
+  size: string;
+  name: string;
+};
+
 const CartBtn = React.memo(
-  ({ product, className }: { product: CartItem; className: string }) => {
-    const cart = useAppSelector((state) => state.cart.items);
+  ({
+    product,
+    className,
+  }: {
+    product: {
+      productId: string;
+      variantId: string;
+      size: string;
+      name: string;
+      image: string;
+    };
+    className: string;
+  }) => {
     const [display, setDisplay] = React.useState(false);
     const dispatch = useAppDispatch();
     const auth = useAuth();
 
     const addProductToCart = useMutation({
-      mutationKey: ["user", auth?.sessionId],
-      mutationFn: async (data: { data: CartItem[] }) => {
-        const response = await axios.post(`/api/user/${auth.sessionId}`, data);
-        return response.data;
+      mutationKey: ["user", auth?.userId],
+      mutationFn: async (data: { data: CartProps[] }) => {
+        if (!auth.isSignedIn) {
+          return;
+        }
+        try {
+          const response = await axios.post(`/api/user/${auth.userId}`, data);
+          return response.data;
+        } catch (error) {
+          console.error("Failed to add product to cart:", error);
+          alert("Failed to add product to cart. Please try again.");
+        }
       },
     });
 
@@ -30,13 +58,14 @@ const CartBtn = React.memo(
         return;
       }
 
-      if (auth.isSignedIn && cart.length > 0) {
+      if (auth.isSignedIn && product.productId && product.variantId) {
         try {
-          await addProductToCart.mutateAsync({
-            data: cart,
+          const res = await addProductToCart.mutateAsync({
+            productId: product.productId,
+            variantId: product.variantId,
           });
-          alert("Product added to cart!");
-          return;
+          console.log(res.data);
+          return res.data.cart;
         } catch (error) {
           console.error("Failed to add product to cart:", error);
           alert("Failed to add product to cart. Please try again.");
@@ -45,12 +74,7 @@ const CartBtn = React.memo(
 
       // Trigger display of relative content
       setDisplay(true);
-
-      // Add to cart
-      if (product) {
-        dispatch(addToCart({ ...product, quantity: 1, price: product?.price }));
-      }
-    }, [product, addProductToCart, dispatch, cart, auth.isSignedIn]);
+    }, [product, addProductToCart, auth.isSignedIn]);
 
     useEffect(() => {
       if (display) {

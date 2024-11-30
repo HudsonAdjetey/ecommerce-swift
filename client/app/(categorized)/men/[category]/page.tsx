@@ -38,17 +38,18 @@ const Pages = () => {
     if (useFetchQuery.data && useFetchQuery.isSuccess) {
       const filteredProducts = useFetchQuery.data?.products.filter(
         (pro: ProductsProps) => {
-          const params = searchParams.category === "all" ? "" : searchParams.category;
+          const params =
+            searchParams.category === "all" ? "" : searchParams.category;
           return params === "" ? pro : pro.typeMain === params;
         }
       );
       setProductsContainer(filteredProducts);
     }
-  }, [useFetchQuery.data, searchParams.category]);
+  }, [useFetchQuery.data, searchParams.category, useFetchQuery.isSuccess]);
 
   return (
     <main className="bg-white overflow-x-clip min-h-screen relative">
-      <StickyBase customText="Women" />
+      <StickyBase customText="men" />
       {useFetchQuery.isLoading && !useFetchQuery.isError ? (
         <div className="w-screen min-h-screen overflow-hidden absolute inset-0 flex items-center justify-center bg-white ">
           <div className="loaders " />
