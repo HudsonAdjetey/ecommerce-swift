@@ -11,7 +11,6 @@ const CustomImageBlur = dynamic(() => import("@/components/common/ImageBlur"), {
 
 interface InfoDisplayProps {
   currentProduct?: ProductsProps;
-  activeProduct: ActiveProductType;
   selectedSize: string;
   setSelectedSize: (size: string) => void;
   isLoading: boolean;
@@ -19,23 +18,22 @@ interface InfoDisplayProps {
 
 const InfoDisplay: React.FC<InfoDisplayProps> = ({
   currentProduct,
-  activeProduct,
   selectedSize,
   setSelectedSize,
   isLoading,
 }) => {
   const [activeImage, setActiveImage] = useState("");
   const [availableSizes, setAvailableSizes] = useState<string[]>([]);
-  const [activeProductId, setActiveProductId] = useState("");
+  const [activeProductId, setActiveProductId] = useState<string>("");
   const [activePrice, setActivePrice] = useState<number>(0);
   useEffect(() => {
     if (currentProduct?.variants) {
       if (!activeProductId && currentProduct?.variants?.length > 0) {
-        setActiveProductId(currentProduct.variants[0]._id);
+        setActiveProductId(currentProduct.variants[0].variantId);
       }
       setActivePrice(currentProduct.variants[0].price);
       const product = currentProduct.variants.find(
-        (variant) => variant._id === activeProductId
+        (variant) => variant.variantId.toString() === activeProductId.toString()
       );
 
       if (product) {
@@ -43,7 +41,7 @@ const InfoDisplay: React.FC<InfoDisplayProps> = ({
       }
     }
   }, [currentProduct?.variants, currentProduct, activeProductId]);
-
+  console.log(activeProductId);
   return !isLoading ? (
     currentProduct ? (
       <section className="flex gap-10 bg-[#EFEFEF] max-lg:flex-col p-10 w-full">
@@ -139,10 +137,7 @@ const InfoDisplay: React.FC<InfoDisplayProps> = ({
               product={{
                 productId: currentProduct._id,
                 variantId: activeProductId,
-                price: activePrice,
                 size: selectedSize,
-                image: activeImage,
-                name: currentProduct.name
               }}
             />
             <h2 className="text-2xl font-semibold">

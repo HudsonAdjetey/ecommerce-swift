@@ -32,6 +32,12 @@ const CustomAccount = () => {
             imageUrl: user.imageUrl || null,
             firstName: user.firstName || "",
             lastName: user.lastName || "",
+          }, {
+            "headers": {
+              'Content-Type': 'application/json',
+              "Authorization": `Bearer ${userId}`
+            },
+            withCredentials: true, 
           }
         );
         console.log(res.data);

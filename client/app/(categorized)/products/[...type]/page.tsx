@@ -4,7 +4,6 @@ import InfoCustomer from "@/components/scenes/productPage/InfoCustomer";
 import InfoDisplay from "@/components/scenes/productPage/InfoDisplay";
 import SimilarProducts from "@/components/scenes/productPage/SimilarProducts";
 import TabsDescription from "@/components/scenes/productPage/TabsDescription";
-import { informationProducts, productsContainer } from "@/dummy/products";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
@@ -28,16 +27,6 @@ const Page = () => {
   });
   const [loading, setIsLoading] = useState(false);
   const searchType = useSearchParams().get("type");
-  const [activeProduct, setActiveProduct] = useState<ActiveProductType>({
-    id: "",
-    name: "",
-    color: "",
-    quantity: 1,
-    size: "",
-    image: "",
-    price: 0,
-    total: 0,
-  });
 
   const [selectedSize, setSelectedSize] = useState<string>("");
 
@@ -52,7 +41,7 @@ const Page = () => {
         setProductContainer(undefined);
       }
     }
-  }, [fetchProductById.data, searchType, fetchProductById.isSuccess]);
+  }, [fetchProductById.data, searchType, fetchProductById.isSuccess, searchId]);
 
   useEffect(() => {
     if (fetchProductById.isLoading) {
@@ -70,11 +59,10 @@ const Page = () => {
     <main className="bg-white">
       {/* Top section for product view */}
       <InfoDisplay
-        activeProduct={activeProduct}
         currentProduct={productContainer ? productContainer : undefined}
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
-        isLoading= {loading}
+        isLoading={loading}
       />
       {/* Product description */}
       <TabsDescription info={productContainer} />

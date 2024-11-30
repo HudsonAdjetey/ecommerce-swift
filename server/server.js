@@ -52,7 +52,6 @@ app.use(
     secretKey: "sk_test_V0KEROMU0DYUSi5csrZWG8FBD0HagPFriqpm9OIW2M",
   })
 );
-
 app.use("/api/auth/", AuthRouter);
 app.use("/api/cart/", CartRouter);
 app.use("/api/coupon", CouponRouter);

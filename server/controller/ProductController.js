@@ -74,8 +74,17 @@ const createProducts = asyncHandler(async (req, res, next) => {
 
 // Get all products
 const getProducts = asyncHandler(async (req, res, next) => {
-  const { category, brand, tags, minPrice, maxPrice, sort, page, limit,typeMain } =
-    req.query;
+  const {
+    category,
+    brand,
+    tags,
+    minPrice,
+    maxPrice,
+    sort,
+    page,
+    limit,
+    typeMain,
+  } = req.query;
 
   // Generate a unique cache key based on all query parameters
   const cacheKey = generateCacheKey(`getProducts`, Object.values(req.query));
@@ -97,7 +106,7 @@ const getProducts = asyncHandler(async (req, res, next) => {
     const matchStage = {};
     if (category) matchStage.category = category;
     if (brand) matchStage.brand = brand;
-    if(typeMain)matchStage.typeMain = typeMain
+    if (typeMain) matchStage.typeMain = typeMain;
     if (tags) matchStage.tags = { $in: tags.split(",") };
     if (minPrice || maxPrice) {
       matchStage.price = {};
@@ -178,7 +187,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
 
     res
       .status(200)
-      .json({ product, message: "Product retrieved successfully" });
+      .json({ products: product, message: "Product retrieved successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error", error: error.message });

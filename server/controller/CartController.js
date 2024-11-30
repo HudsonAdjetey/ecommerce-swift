@@ -7,24 +7,23 @@ const { publishMessage } = require("../pubsub/publisher");
 // add to cart
 const addToCart = asyncHandler(async (req, res, next) => {
   try {
-    const { productId, variantId } = req.body;
-
-    // check if there are no variantsId or ProductId
-    if (!productId || !variantId) {
+    const { variantId, size } = req.body;
+    if (!req.params.productId || !variantId) {
       return res
         .status(400)
         .json({ message: "Missing productId or variantId" });
     }
-    //   find if the product exists
-    const products = await ProductModel.findById({ _id: productId }).populate(
+    const products = await ProductModel.findById(req.params.productId).populate(
       "variants"
     );
-    if (!products || products.count() == 0) {
+    if (!products.name) {
       return res.status(404).json({ message: "Product not found" });
     }
-    const matchingVariants = products.variants.find(
-      (variant) => variant.variantId === variantId
-    );
+    console.log(variantId);
+    const matchingVariants = products.variants.find((variant) => {
+      console.log(variant.variantId.toString());
+      return variant.variantId.toString() === variantId.toString();
+    });
     if (!matchingVariants) {
       return res.status(404).json({ message: "Variant not found" });
     }
@@ -33,32 +32,43 @@ const addToCart = asyncHandler(async (req, res, next) => {
     if (!cart) {
       cart = new CartModel({ userId: req.user.userId });
     }
+
     const productIndex = cart.items.findIndex(
       (item) =>
-        item.productId.toString() === productId.toString() &&
-        item.variantId.toString() === variantId
-    );
-    const totalSubTotal = cart.items.reduce(
-      (total, item) => total + item.subtotal,
-      0
+        item.productId.toString() === req.params.productId.toString() &&
+        item.variantId.toString() === variantId &&
+        item.size === size
     );
     if (productIndex === -1) {
       cart.items.push({
-        productId,
+        productId: req.params.productId,
         variantId,
         quantity: 1,
         price: matchingVariants.price,
         subtotal: matchingVariants.price,
+        size,
       });
     } else {
       cart.items[productIndex].quantity++;
       cart.items[productIndex].subtotal =
         cart.items[productIndex].price * cart.items[productIndex].quantity;
-      cart.totalPrice = totalSubTotal;
     }
-    cart.totalPrice = totalSubTotal;
+
+    cart.totalPrice = cart.items.reduce(
+      (total, item) => total + item.subtotal,
+      0
+    );
     await cart.save();
-    res.status(200).json({ message: "Product added to cart" });
+    res.status(200).json({
+      message: "Product added to cart",
+      cart: {
+        items: cart.items.map((item) => ({
+          ...item,
+          subtotal: item.price * item.quantity,
+        })),
+        totalPrice: cart.totalPrice,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -83,7 +93,6 @@ const getProductFromCart = asyncHandler(async (req, res, next) => {
     }
 
     await setCache(cacheKey, cart);
-    // publisher
     publishMessage("get_cart", cart);
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {
@@ -94,7 +103,6 @@ const getProductFromCart = asyncHandler(async (req, res, next) => {
 });
 
 // Remove product from cart
-
 const removeProductFromCart = asyncHandler(async (req, res, next) => {
   const cacheKey = generateCacheKey("cart", req.user.userId);
 
@@ -118,17 +126,15 @@ const removeProductFromCart = asyncHandler(async (req, res, next) => {
         item.productId.toString() === productId.toString() &&
         item.variantId.toString() === variantId
     );
-
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });
     }
-    cart.totalPrice = cart.totalPrice - cart.items[productIndex].subtotalPrice;
+
+    cart.totalPrice -= cart.items[productIndex].subtotal;
     cart.items.splice(productIndex, 1);
 
     await cart.save();
-
     await setCache(cacheKey, cart);
-    // publisher
     publishMessage("remove_cart", cart);
     res.status(200).json({ message: "Items removed from cart", cart });
   } catch (error) {
@@ -145,24 +151,21 @@ const updateCart = asyncHandler(async (req, res, next) => {
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
-    const { quantity } = req.body;
+
+    const { productId, quantity } = req.body;
     const productIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === req.body.productId.toString()
+      (item) => item.productId.toString() === productId.toString()
     );
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });
     }
-    cart.items[productIndex].quantity = quantity;
-    cart.totalPrice = cart.items.reduce(
-      (acc, item) => acc + item.quantity * item.price,
-      0
-    );
 
+    cart.items[productIndex].quantity = quantity;
     cart.items[productIndex].subtotal =
       quantity * cart.items[productIndex].price;
+    cart.totalPrice = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
 
     await cart.save();
-
     await setCache(cacheKey, cart);
     publishMessage("updated_cart", cart);
     res.status(200).json({ message: "Cart updated", cart });

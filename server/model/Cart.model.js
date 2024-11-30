@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const CartSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },
@@ -32,6 +32,12 @@ const CartSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        size: {
+          type: String,
+          required: true,
+        },
+
+        image: String,
       },
     ],
     totalPrice: {
@@ -70,4 +76,4 @@ CartSchema.pre("save", function (next) {
 
 const CartModel = mongoose.model("Cart", CartSchema);
 
-module.exports = CartModel; 
+module.exports = CartModel;

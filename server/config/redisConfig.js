@@ -10,6 +10,8 @@ const redisClient = createClient({
     // Exponential backoff strategy for retrying connections
     const delay = Math.min(times * 100, 2000); 
     console.log(`Retrying connection to Redis in ${delay}ms`);
+
+    
     return delay;
   },
 });

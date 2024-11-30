@@ -8,7 +8,11 @@ const {
 } = require("../controller/CartController");
 const protectedRouteMiddleware = require("../middleware/authMiddleware");
 
-CartRouter.post("/post-cart/", protectedRouteMiddleware, addToCart);
+CartRouter.post(
+  "/cart-product/:productId",
+  protectedRouteMiddleware,
+  addToCart
+);
 CartRouter.get(
   "/get-product-cart/",
   protectedRouteMiddleware,
