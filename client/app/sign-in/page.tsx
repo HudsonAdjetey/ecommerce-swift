@@ -1,4 +1,4 @@
-"use client";
+/* "use client";
 import { useAuth, useUser, } from "@clerk/clerk-react";
 import { SignInButton } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
@@ -77,7 +77,7 @@ export default function Page() {
     if (userMutate.isError) {
       console.error("Error during user authentication:", userMutate.error);
     }
-  }, [router, userMutate.isSuccess, userMutate.isError]);
+  }, [router, userMutate.isSuccess, userMutate.error]);
 
   return (
     <div className="w-full min-h-screen bg-white grid place-content-center">
@@ -95,3 +95,15 @@ export default function Page() {
     </div>
   );
 }
+ */
+
+
+import React from 'react'
+
+const page = () => {
+  return (
+    <div>page</div>
+  )
+}
+
+export default page

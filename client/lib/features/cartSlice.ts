@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const CART_KEY = "guest_user";
 
@@ -101,7 +101,6 @@ const cartSlice = createSlice({
       if (itemToupdate) {
         itemToupdate.quantity = action.payload.quantity;
         itemToupdate.subtotal = itemToupdate.price * itemToupdate.quantity;
-        itemToupdate;
       }
       const totals = updateCartTotals(state.items);
       state.totalItems = totals.totalItems;

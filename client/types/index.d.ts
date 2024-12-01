@@ -115,7 +115,7 @@ type ListItems = ProductType & {
 };
 
 type ProductType = {
-  id: string;
+  id: number | string;
   name: string;
   alt?: string;
   colorsAvailable: string[];
@@ -144,6 +144,11 @@ type VariantsType = {
   available: boolean;
   name: string;
   brand: string;
+  gender: string;
+  activityType: string;
+  price: number;
+  category: string;
+  availability: boolean;
 };
 
 type ProductContainerType = ProductType & {
@@ -161,20 +166,6 @@ type ProdcutDescription = {
   subContent?: {
     [key: string]: string;
   };
-};
-
-type ActiveProductType = {
-  id: string;
-  name: string;
-  alt?: string;
-  color: string;
-  quantity: number;
-  size?: string;
-  image: string | StaticImageData;
-  price: number;
-  category?: string;
-  total?: number;
-  subTotal?: number;
 };
 
 interface Variant {

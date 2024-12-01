@@ -140,10 +140,14 @@ const ProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    viewCount: {
+      type: Number,
+      default: 0
+    }, 
     discount: {
       type: Number,
       min: 0,
-      max: 100, // Discount percentage
+      max: 100,
       default: 0,
     },
     metaData: {

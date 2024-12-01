@@ -1,5 +1,4 @@
 "use client";
-import { Image } from "lucide-react";
 import React, { FormEvent, memo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
@@ -109,9 +108,6 @@ const page = memo(() => {
 
           {fileContent ? (
             <div className="flex items-center   gap-3">
-              <span className="text-gray-500">
-                <Image size={18} className="text-gray-600" />
-              </span>
               <p className="text-sm text-gray-400">{imageName}</p>
             </div>
           ) : (
@@ -327,8 +323,6 @@ const page = memo(() => {
           <button onClick={handleSubmission}>Submit</button>
         </div>
       </form>
-
-
     </section>
   );
 });
