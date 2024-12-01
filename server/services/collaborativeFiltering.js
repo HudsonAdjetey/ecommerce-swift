@@ -3,51 +3,59 @@ const UserInteractionModel = require("../model/UserInteraction.model");
 const ProductModel = require("../model/Product.model");
 
 const getCollaborativeRecommendation = async (productId) => {
-  // finding users who interacted with the product
-  const userInteractions = await UserInteractionModel.aggregate([
-    {
-      $match: {
-        productId,
-        interactionType: { $in: ["like", "purchase", "favorite"] },
-      },
-    },
-    {
-      $group: {
-        _id: "$userId",
-      },
-    },
-  ]);
+  try {
+    // Convert the productId to an ObjectId
+    const productObjectId = new mongoose.Types.ObjectId(productId);
 
-  const userIds = userInteractions.map((interaction) => interaction._id);
-
-  // get products that users interacted with
-  const collaborativeProducts = await UserInteractionModel.aggregate([
-    {
-      $match: {
-        userId: { $in: userIds },
-        productId: { $ne: mongoose.Types.ObjectId(productId) },
+    // Finding users who interacted with the product
+    const userInteractions = await UserInteractionModel.aggregate([
+      {
+        $match: {
+          productId: productObjectId,
+          interactionType: { $in: ["like", "purchase", "favorite", "view"] },
+        },
       },
-      $group: {
-        _id: "$productId",
-        // counting interactions
-        interactionCount: { $sum: 1 },
+      {
+        $group: {
+          _id: "$userId", 
+        },
       },
-    },
-    {
-      // sorting by the most interacted products
-      $sort: { interactionCount: -1 },
-    },
-    //   returning the top 5 recommendations
-    {
-      $limit: 5,
-    },
-  ]);
-  const productIds = collaborativeProducts.map((product) => product._id);
-  const recommendedProducts = await ProductModel.find({
-    _id: { $in: productIds },
-  });
+    ]);
 
-  return recommendedProducts;
+    const userIds = userInteractions.map((interaction) => interaction._id);
+
+    const collaborativeProducts = await UserInteractionModel.aggregate([
+      {
+        $match: {
+          userId: { $in: userIds },
+          productId: { $ne: productObjectId },
+        },
+      },
+      {
+        $group: {
+          _id: "$productId",
+          interactionCount: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { interactionCount: -1 },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
+
+    const productIds = collaborativeProducts.map((product) => product._id);
+
+    const recommendedProducts = await ProductModel.find({
+      _id: { $in: productIds },
+    });
+
+    return recommendedProducts;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error fetching collaborative recommendations.");
+  }
 };
 
 module.exports = { getCollaborativeRecommendation };

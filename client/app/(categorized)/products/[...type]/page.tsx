@@ -4,6 +4,7 @@ import InfoCustomer from "@/components/scenes/productPage/InfoCustomer";
 import InfoDisplay from "@/components/scenes/productPage/InfoDisplay";
 import SimilarProducts from "@/components/scenes/productPage/SimilarProducts";
 import TabsDescription from "@/components/scenes/productPage/TabsDescription";
+import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
@@ -11,14 +12,21 @@ import { useEffect, useState } from "react";
 
 const Page = () => {
   const searchId = useSearchParams().get("id");
+  const auth = useAuth();
   const [productContainer, setProductContainer] = useState<
     ProductsProps | undefined
   >(undefined);
   const fetchProductById = useQuery({
     queryKey: ["product", searchId],
     queryFn: async () => {
+      const token = await auth.getToken();
       const response = await axios.get(
-        `http://localhost:5913/api/product/get-productsId/${searchId}`
+        `http://localhost:5913/api/product/get-productsId/${searchId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       return await response.data;

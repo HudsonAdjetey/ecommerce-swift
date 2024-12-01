@@ -20,7 +20,7 @@ const ensurePublisherConnection = async (redisPublisher) => {
 };
 
 /**
- * Publishes a message to the Redis server with a retry mechanism and exponential backoff.
+ * publisihing a message to the Redis server with a retry mechanism and exponential backoff.
  *
  * @param {string} channel - The Redis channel to publish the message to.
  * @param {Object} message - The message to be published.
@@ -68,7 +68,7 @@ const publishMessage = async (
       console.error(
         `Max retries reached for publishing message to channel "${channel}"`
       );
-      // Optionally, you can also send an alert or store the failed publish attempt
+      // Optionally --> will send an alert or a message
       throw error;
     }
   }

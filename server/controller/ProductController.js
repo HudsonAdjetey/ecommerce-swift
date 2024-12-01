@@ -2,6 +2,11 @@ const asyncHandler = require("express-async-handler");
 const ProductModel = require("../model/Product.model");
 const { publishMessage } = require("../pubsub/publisher");
 const { generateCacheKey, setCache, getCache } = require("../utils/redisUtils");
+const UserInteractionModel = require("../model/UserInteraction.model");
+const getSimilarProduct = require("../services/similarProductService");
+const {
+  getCollaborativeRecommendation,
+} = require("../services/collaborativeFiltering");
 // Create a new product
 const createProducts = asyncHandler(async (req, res, next) => {
   try {
@@ -166,28 +171,115 @@ const getProducts = asyncHandler(async (req, res, next) => {
 // Get a single product by ID
 const getProductById = asyncHandler(async (req, res, next) => {
   try {
-    const cachekey = generateCacheKey(`getProductsId`, req.params.productId);
-
-    const cacheProducts = await getCache(cachekey);
-    if (cacheProducts) {
+    // Generate cache key based on productId
+    const cacheKey = generateCacheKey("getProductsId", req.params.productId);
+    const recommendCacheKey = generateCacheKey(
+      "recommendCacheId",
+      req.params.productId
+    );
+    // Check if product data is in cache
+    const cacheProducts = await getCache(cacheKey);
+    const recommendedProducts = await getCache(recommendCacheKey);
+    if (cacheProducts && recommendedProducts) {
       return res.status(200).json({
-        message: "Products fetched from cache",
+        message: "Product fetched from cache",
         products: cacheProducts,
+        recommendedProducts: recommendedProducts,
       });
     }
 
+    // Fetch the product from the database
     const product = await ProductModel.findById(req.params.productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    await setCache(cachekey, product);
+    // Handle user interaction for views
+    if (req.user && req.user.userId) {
+      const userInteractions = await UserInteractionModel.findOne({
+        userId: req.user.userId,
+      });
 
+      if (userInteractions) {
+        // Check if the product is already in the interaction history
+        const isProductInInteraction =
+          userInteractions.productId.toString() === req.params.productId;
+
+        if (!isProductInInteraction) {
+          // Log the view interaction for the product
+          const newUserInteraction = new UserInteractionModel({
+            userId: req.user.userId,
+            productId: req.params.productId,
+            interactionType: "view",
+          });
+          await newUserInteraction.save();
+        }
+
+        // Increment view count of the product
+        const updateCount = await ProductModel.findByIdAndUpdate(
+          req.params.productId,
+          {
+            $inc: { viewCount: 1 },
+          }
+        );
+        if (updateCount) {
+          console.log("Updated");
+        }
+
+        // Update the interaction history
+        await UserInteractionModel.findByIdAndUpdate(userInteractions._id, {
+          $push: { interactionHistory: { type: "view" } },
+        });
+      } else {
+        // Create new interaction record if the user hasn't interacted before
+        const newUserInteraction = new UserInteractionModel({
+          userId: req.user.userId,
+          productId: req.params.productId,
+          interactionType: "view",
+        });
+        await newUserInteraction.save();
+      }
+    }
+
+    // Set cache for the product data
+    await setCache(cacheKey, product, 600);
+
+    // Publish a message about the product view
     publishMessage("getProductsId", product);
 
-    res
-      .status(200)
-      .json({ products: product, message: "Product retrieved successfully" });
+    // Get recommendations based on content and collaborative filtering
+    const contentBased = await getSimilarProduct(req.params.productId);
+    const collaborativeBased = await getCollaborativeRecommendation(
+      req.params.productId
+    );
+
+    // Combine recommendations without it  duplicating
+    const recommendations = [
+      ...contentBased,
+      ...collaborativeBased.filter(
+        (collabProd) =>
+          !contentBased.some(
+            (contentProd) =>
+              contentProd._id.toString() === collabProd._id.toString()
+          )
+      ),
+    ];
+    // cache the rcommedations
+    const newRecommendation = recommendations.map((recommendation) => {
+      // return the first products
+      return {
+        ...recommendation,
+        variants: recommendation.variants[0],
+      };
+    });
+    console.log(recommendations);
+    await setCache(recommendCacheKey, recommendations, 600);
+    // Respond with the product and recommendations
+    res.status(200).json({
+      products: product,
+      recommendations: newRecommendation,
+      message: "Product retrieved successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -291,7 +383,7 @@ const performProductSearch = asyncHandler(async (req, res, next) => {
       const [key, order] = sort.split(":");
       pipeline.push({ $sort: { [key]: order === "desc" ? -1 : 1 } });
     } else {
-      pipeline.push({ $sort: { _id: -1 } }); // Default sort (newest first)
+      pipeline.push({ $sort: { _id: -1 } });
     }
     // Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
