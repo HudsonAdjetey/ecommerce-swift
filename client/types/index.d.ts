@@ -203,3 +203,21 @@ type ProductsProps = {
   };
   size?: string;
 };
+
+type RecommendataionProps = {
+  _id: string;
+  category: string;
+
+  name: string;
+  typeMain: string;
+  availableSizes: string[];
+  description: string;
+  contentInfo: ProductInfoDetails;
+  brand: string;
+  tags: string[];
+  variants: Variant;
+  subContent?: {
+    [key: string]: string;
+  };
+  size?: string;
+};

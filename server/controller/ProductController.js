@@ -184,7 +184,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
       return res.status(200).json({
         message: "Product fetched from cache",
         products: cacheProducts,
-        recommendedProducts: recommendedProducts,
+        recommendations: recommendedProducts,
       });
     }
 
@@ -273,7 +273,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
       };
     });
     console.log(recommendations);
-    await setCache(recommendCacheKey, recommendations, 600);
+    await setCache(recommendCacheKey, newRecommendation, 600);
     // Respond with the product and recommendations
     res.status(200).json({
       products: product,

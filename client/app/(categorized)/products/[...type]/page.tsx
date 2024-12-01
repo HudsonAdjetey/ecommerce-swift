@@ -16,6 +16,9 @@ const Page = () => {
   const [productContainer, setProductContainer] = useState<
     ProductsProps | undefined
   >(undefined);
+  const [recommededProduct, setRecommendedProducts] = useState<
+    RecommendataionProps[] | []
+  >([]);
   const fetchProductById = useQuery({
     queryKey: ["product", searchId],
     queryFn: async () => {
@@ -45,6 +48,7 @@ const Page = () => {
         fetchProductById.data.products._id === searchId
       ) {
         setProductContainer(fetchProductById.data.products);
+        setRecommendedProducts(fetchProductById.data.recommendations);
       } else {
         setProductContainer(undefined);
       }
@@ -76,7 +80,9 @@ const Page = () => {
       <TabsDescription info={productContainer} />
 
       {/* Recommended products */}
-      <SimilarProducts />
+      <SimilarProducts
+        recommendedProducts={recommededProduct ? recommededProduct : []}
+      />
 
       {/* Customer information */}
       <InfoCustomer />
