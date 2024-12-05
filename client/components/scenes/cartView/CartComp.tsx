@@ -5,18 +5,19 @@ import ProductInfo from "./ProductInfo";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Footer from "@/components/common/Footer";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
+import axios from "axios";
 
 const CartComp = () => {
   const { getToken, userId } = useAuth();
-  const [shipping, setShipping] = useState<string>("storePickup"); // Default to store pickup
+  const [shipping, setShipping] = useState<string>("storePickup");
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["cart", userId],
     queryFn: async () => {
       const token = await getToken();
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:5913/api/cart/get-product-cart/`,
         {
           headers: {
@@ -24,9 +25,39 @@ const CartComp = () => {
           },
         }
       );
-      return response.json();
+      return response.data;
     },
   });
+
+  const updateMutation = useMutation({
+    mutationKey: ["cart", userId],
+    mutationFn: async (data: { variantId: string; quantity: number }) => {
+      const token = await getToken();
+      const res = await axios.put(
+        "http://localhost:5913/api/cart/update-product-cart",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return res.data;
+    },
+  });
+
+  // handling increment and decrement functionality
+  const handleIncrement = (variantId: string, currentQuantity: number) => {
+    const newQuantity = currentQuantity + 1;
+    updateMutation.mutate({ variantId, quantity: newQuantity });
+  };
+
+  const handleDecrement = (variantId: string, currentQuantity: number) => {
+    if (currentQuantity > 1) {
+      const newQuantity = currentQuantity - 1;
+      updateMutation.mutate({ variantId, quantity: newQuantity });
+    }
+  };
 
   const cartContainer = data?.cart;
 
@@ -76,11 +107,21 @@ const CartComp = () => {
                       color={cart.color ?? "red"}
                     />
                     <div className="flex self-center gap-3">
-                      <button className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold">
+                      <button
+                        className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold"
+                        onClick={() =>
+                          handleIncrement(cart.variantId, cart.quantity)
+                        }
+                      >
                         +
                       </button>
                       <span className="text-xl ">{cart.quantity}</span>
-                      <button className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold">
+                      <button
+                        onClick={() =>
+                          handleDecrement(cart.variantId, cart.quantity)
+                        }
+                        className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold"
+                      >
                         -
                       </button>
                     </div>

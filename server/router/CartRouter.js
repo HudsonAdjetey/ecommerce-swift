@@ -18,6 +18,9 @@ CartRouter.get(
   protectedRouteMiddleware,
   getProductFromCart
 );
+
+
+
 CartRouter.delete(
   "/remove-product-cart/",
   protectedRouteMiddleware,

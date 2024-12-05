@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const CART_KEY = "guest_user";
 
 const loadCartFromSession = () => {
-  if (typeof window !== undefined && window.sessionStorage) {
+  if (typeof window !== undefined) {
     const cartFetch = window.sessionStorage.getItem(CART_KEY);
     return cartFetch ? JSON.parse(cartFetch) : [];
   }
@@ -11,7 +11,7 @@ const loadCartFromSession = () => {
 };
 
 export const saveCartItemsToSessionStorage = (items: CartItemProps) => {
-  if (typeof window !== undefined && window.sessionStorage) {
+  if (typeof window !== undefined) {
     window.sessionStorage.setItem(CART_KEY, JSON.stringify(items));
   }
 };

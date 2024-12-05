@@ -7,8 +7,8 @@ const { publishMessage } = require("../pubsub/publisher");
 // add to cart
 const addToCart = asyncHandler(async (req, res, next) => {
   try {
+    const cacheKey = generateCacheKey("cart", req.user.userId);
     const { variantId, size } = req.body;
-    console.log(variantId);
     if (!req.params.productId || !variantId) {
       return res
         .status(400)
@@ -63,6 +63,7 @@ const addToCart = asyncHandler(async (req, res, next) => {
       0
     );
     await cart.save();
+    await setCache(cacheKey, cart);
     res.status(200).json({
       message: "Product added to cart",
       cart: {
@@ -89,13 +90,22 @@ const addToCart = asyncHandler(async (req, res, next) => {
 const getProductFromCart = asyncHandler(async (req, res, next) => {
   try {
     const userId = req.user.userId;
+    const cacheKey = generateCacheKey("cart", userId);
 
+    const cachedCart = await getCache(cachekey);
+    if (cachedCart) {
+      return res.status(200).json({
+        message: "Product cached successfully",
+        cart: cachedCart,
+      });
+    }
     const cart = await CartModel.findOne({ userId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
     publishMessage("get_cart", cart);
+    await setCache(cacheKey, cart);
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {
     console.error(error);
@@ -154,9 +164,9 @@ const updateCart = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    const { productId, quantity } = req.body;
+    const { variantId, quantity } = req.body;
     const productIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId.toString()
+      (item) => item.variantId.toString() === variantId.toString()
     );
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });

@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { SearchProvider } from "@/hooks/useSearchContext";
-import Providers, { QueryProvider } from "@/lib/provider";
+import { QueryProvider } from "@/lib/provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,9 +25,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${inter.className} antialiased`}>
           <QueryProvider>
-            <Providers>
               <SearchProvider>{children}</SearchProvider>
-            </Providers>
           </QueryProvider>
         </body>
       </html>
