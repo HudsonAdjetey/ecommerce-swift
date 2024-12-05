@@ -8,6 +8,7 @@ const {
   updateProductById,
   deleteProductById,
   performProductSearch,
+  searchProduct,
 } = require("../controller/ProductController");
 const checkAuthMiddleware = require("../middleware/authCheckMiddleware");
 const ProductRouter = express.Router();
@@ -22,5 +23,6 @@ ProductRouter.get(
 );
 ProductRouter.put("/update-product/:productId", updateProductById);
 ProductRouter.delete("/delete-product/:productId", deleteProductById);
-ProductRouter.get("/search-products", performProductSearch);
+// ProductRouter.get("/search-products", performProductSearch);
+ProductRouter.get("/search-products", searchProduct);
 module.exports = ProductRouter;

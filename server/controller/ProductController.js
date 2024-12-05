@@ -222,7 +222,6 @@ const getProductById = asyncHandler(async (req, res, next) => {
             $inc: { viewCount: 1 },
           }
         );
- 
 
         // Update the interaction history
         await UserInteractionModel.findByIdAndUpdate(userInteractions._id, {
@@ -323,31 +322,42 @@ const deleteProductById = asyncHandler(async (req, res, next) => {
 const performProductSearch = asyncHandler(async (req, res, next) => {
   try {
     const {
-      query,
+      query = "",
       category,
       brand,
       minPrice,
+      name,
       maxPrice,
       sort,
       page = 1,
       limit = 10,
-      autocomplete,
+      autocomplete = true,
     } = req.query;
 
-    //   Mongodb atlas search aggregation pipeline
+    // Validate and sanitize inputs
+    const sanitizedQuery = query.trim();
+    const sanitizedCategory = category?.trim();
+    const sanitizedBrand = brand?.trim();
+    const sanitizedName = name?.trim();
+    const sanitizedPage = Math.max(1, parseInt(page));
+    const sanitizedLimit = Math.min(Math.max(1, parseInt(limit)), 100); // Limit to 100 items per page
+
     const pipeline = [];
 
-    // Atlas search stage for full-text search or automcomplete
+    // Add search stage (Atlas Search or Full-Text Search)
     if (query) {
-      //   choose search type - autocomplete or fuzzy search
       if (autocomplete) {
         pipeline.push({
           $search: {
             index: "default",
             autocomplete: {
-              query: query,
-              path: ["name", "variants", "tags", "description", "attributes"],
-              fuzzy: { maxEdits: 2 },
+              query: sanitizedQuery,
+              path: "name",
+              fuzzy: {
+                maxEdits: 2,
+                prefixLength: 0,
+                maxExpansions: 50,
+              },
             },
           },
         });
@@ -355,18 +365,19 @@ const performProductSearch = asyncHandler(async (req, res, next) => {
         pipeline.push({
           $search: {
             index: "default",
-            query: query,
-            path: ["name", "variants", "tags", "description", "attributes"],
-            fuzzy: { maxEdits: 2 },
+            text: {
+              query: query,
+              path: "name",
+            },
           },
         });
       }
     }
 
-    //   Adding additional or optional filters(s) to - (category, brand, price range)
     const matchStage = {};
-    if (category) matchStage.category = category;
-    if (brand) matchStage.brand = brand;
+    if (sanitizedCategory) matchStage.category = sanitizedCategory;
+    if (sanitizedBrand) matchStage.brand = sanitizedBrand;
+    if (sanitizedName) matchStage.name = sanitizedName;
     if (minPrice || maxPrice) {
       matchStage.price = {};
       if (minPrice) matchStage.price.$gte = parseFloat(minPrice);
@@ -375,45 +386,92 @@ const performProductSearch = asyncHandler(async (req, res, next) => {
     if (Object.keys(matchStage).length > 0) {
       pipeline.push({ $match: matchStage });
     }
-    // Sorting
+
+    // Add sorting
     if (sort) {
       const [key, order] = sort.split(":");
       pipeline.push({ $sort: { [key]: order === "desc" ? -1 : 1 } });
     } else {
+      // Default sorting by newest
       pipeline.push({ $sort: { _id: -1 } });
     }
+
     // Pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip = (sanitizedPage - 1) * sanitizedLimit;
     pipeline.push({ $skip: skip });
-    pipeline.push({ $limit: parseInt(limit) });
+    pipeline.push({ $limit: sanitizedLimit });
 
-    pipeline.push({
-      $project: {
-        _id: 1,
-        name: 1,
-        price: 1,
-        image: 1,
-        brand: 1,
-        category: 1,
-        tags: 1,
-        description: 1,
-        attributes: 1,
-        searchScore: { $meta: "searchScore" },
-      },
-    });
-
+    // Execute pipeline
     const products = await ProductModel.aggregate(pipeline);
+
+    // Calculate total items and pages (Optional - costly for large datasets)
+    const totalItems = sanitizedQuery
+      ? await ProductModel.countDocuments(matchStage)
+      : products.length;
+    const totalPages = Math.ceil(totalItems / sanitizedLimit);
+
+    // Return response
     res.status(200).json({
       products,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      total: products.length,
-
+      page: sanitizedPage,
+      limit: sanitizedLimit,
+      totalItems,
+      totalPages,
       message: "Products retrieved successfully",
     });
   } catch (error) {
-    console.error(error);
+    console.error("Search Error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+const searchProduct = asyncHandler(async (req, res, next) => {
+  try {
+    const { query, autocomplete = false } = req.query;
+    const pipeline = [];
+    if (autocomplete) {
+      pipeline.push({
+        $search: {
+          index: "default",
+          autocomplete: {
+            query: query ? query : "",
+            path: "name",
+            fuzzy: {
+              maxEdits: 2,
+              prefixLength: 0,
+              maxExpansions: 50,
+            },
+          },
+        },
+      });
+    } else {
+      pipeline.push(
+        {
+          $search: {
+            index: "default",
+            text: {
+              query: query ? query : "",
+              path: ["name", "tags", "brand", "category", "typeMain"],
+              fuzzy: {
+                maxEdits: 2,
+                prefixLength: 0,
+                maxExpansions: 10,
+              },
+            },
+          },
+        },
+        {
+          $limit: 10,
+        }
+      );
+    }
+    const searchedProducts = await ProductModel.aggregate(pipeline);
+    res.status(200).json({
+      products: searchedProducts,
+      message: "Products retrieved successfully",
+    });
+  } catch (error) {
+    console.error("Search Error:", error);
     next(error);
   }
 });
@@ -425,4 +483,5 @@ module.exports = {
   updateProductById,
   deleteProductById,
   performProductSearch,
+  searchProduct,
 };
