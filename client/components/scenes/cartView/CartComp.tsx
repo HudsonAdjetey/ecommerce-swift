@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import ProductInfo from "./ProductInfo";
-import ProductPricing from "./ProductPricing";
+// import ProductPricing from "./ProductPricing";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Footer from "@/components/common/Footer";
@@ -99,7 +99,7 @@ const CartComp = () => {
             : "No products"}
         </div>
 
-        <ProductPricing />
+        {/* <ProductPricing /> */}
       </div>
 
       <div className="flex items-center max-md:flex-col gap-10 bg-neutral-100 shadow-md p-4 max-md:items-start justify-between my-10">
