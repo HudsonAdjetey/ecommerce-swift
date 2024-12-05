@@ -27,7 +27,7 @@ const SimilarProducts = ({
                   );
                 }}
                 key={idx}
-                className="product-card flex flex-col "
+                className="product-card flex flex-col cursor-pointer"
               >
                 {/* Main product image */}
                 <ImageBlurComponent
@@ -40,7 +40,7 @@ const SimilarProducts = ({
 
                 {/* Brand and product variants */}
                 <div className="mt-3 flex max-lg:flex-col max-lg:items-start items-center justify-between">
-                  <p className="text-orange-400 font-medium mb-4">
+                  <p className="text-orange-400 font-medium mb-2">
                     {product.brand}
                   </p>
                 </div>

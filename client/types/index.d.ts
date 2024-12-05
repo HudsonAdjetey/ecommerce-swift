@@ -221,3 +221,26 @@ type RecommendataionProps = {
   };
   size?: string;
 };
+
+interface CartListItemsPageProps {
+  productId: string;
+  variantId: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  size: string;
+  image: StaticImageData;
+  productName: string;
+  color: string;
+}
+
+interface CouponProps {
+  code: string;
+  discount: string;
+}
+
+interface CartListedPageProps {
+  items: Array<CartListItemsPageProps>;
+  totalPrice: number;
+  coupon: CouponProps;
+}

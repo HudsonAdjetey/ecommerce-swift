@@ -242,7 +242,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
     }
 
     // Set cache for the product data
-    await setCache(cacheKey, product, 600);
+    await setCache(cacheKey, product);
 
     // Publish a message about the product view
     publishMessage("getProductsId", product);
@@ -273,7 +273,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
       };
     });
     console.log(recommendations);
-    await setCache(recommendCacheKey, newRecommendation, 600);
+    await setCache(recommendCacheKey, newRecommendation);
     // Respond with the product and recommendations
     res.status(200).json({
       products: product,

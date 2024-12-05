@@ -8,10 +8,9 @@ const redisClient = createClient({
   },
   retryStrategy: (times) => {
     // Exponential backoff strategy for retrying connections
-    const delay = Math.min(times * 100, 2000); 
+    const delay = Math.min(times * 100, 6000);
     console.log(`Retrying connection to Redis in ${delay}ms`);
 
-    
     return delay;
   },
 });
@@ -49,7 +48,7 @@ const connectRedis = async () => {
     await redisClient.connect();
   } catch (error) {
     console.error("Failed to connect to Redis:", error.message);
-    setTimeout(connectRedis, 5000); 
+    setTimeout(connectRedis, 5000);
   }
 };
 

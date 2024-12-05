@@ -36,7 +36,6 @@ const Page = () => {
     },
     refetchInterval: 3600000,
   });
-  const [loading, setIsLoading] = useState(false);
   const searchType = useSearchParams().get("type");
 
   const [selectedSize, setSelectedSize] = useState<string>("");
@@ -55,18 +54,6 @@ const Page = () => {
     }
   }, [fetchProductById.data, searchType, fetchProductById.isSuccess, searchId]);
 
-  useEffect(() => {
-    if (fetchProductById.isLoading) {
-      setIsLoading(true);
-    } else if (fetchProductById.isSuccess || fetchProductById.isError) {
-      setIsLoading(false);
-    }
-  }, [
-    fetchProductById.isLoading,
-    fetchProductById.isSuccess,
-    fetchProductById.isError,
-  ]);
-
   return (
     <main className="bg-white">
       {/* Top section for product view */}
@@ -74,7 +61,7 @@ const Page = () => {
         currentProduct={productContainer ? productContainer : undefined}
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
-        isLoading={loading}
+        isLoading={fetchProductById.isLoading ? true : false}
       />
       {/* Product description */}
       <TabsDescription info={productContainer} />

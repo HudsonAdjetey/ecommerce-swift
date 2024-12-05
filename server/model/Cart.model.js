@@ -9,6 +9,7 @@ const CartSchema = new mongoose.Schema(
     },
     items: [
       {
+        productName: String,
         productId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
@@ -35,6 +36,12 @@ const CartSchema = new mongoose.Schema(
         size: {
           type: String,
           required: true,
+        },
+        color: {
+          type: String,
+        },
+        sku: {
+          type: String,
         },
 
         image: String,

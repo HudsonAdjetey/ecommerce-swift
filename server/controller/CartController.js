@@ -8,6 +8,7 @@ const { publishMessage } = require("../pubsub/publisher");
 const addToCart = asyncHandler(async (req, res, next) => {
   try {
     const { variantId, size } = req.body;
+    console.log(variantId);
     if (!req.params.productId || !variantId) {
       return res
         .status(400)
@@ -19,9 +20,7 @@ const addToCart = asyncHandler(async (req, res, next) => {
     if (!products.name) {
       return res.status(404).json({ message: "Product not found" });
     }
-    console.log(variantId);
     const matchingVariants = products.variants.find((variant) => {
-      console.log(variant.variantId.toString());
       return variant.variantId.toString() === variantId.toString();
     });
     if (!matchingVariants) {
@@ -47,11 +46,16 @@ const addToCart = asyncHandler(async (req, res, next) => {
         price: matchingVariants.price,
         subtotal: matchingVariants.price,
         size,
+        image: matchingVariants.image,
+        productName: products.name,
+        color: matchingVariants.color,
+        sku: matchingVariants.sku,
       });
     } else {
       cart.items[productIndex].quantity++;
       cart.items[productIndex].subtotal =
         cart.items[productIndex].price * cart.items[productIndex].quantity;
+      image: matchingVariants.image;
     }
 
     cart.totalPrice = cart.items.reduce(
@@ -65,6 +69,12 @@ const addToCart = asyncHandler(async (req, res, next) => {
         items: cart.items.map((item) => ({
           ...item,
           subtotal: item.price * item.quantity,
+          color: matchingVariants.color,
+          image: matchingVariants.image,
+          price: matchingVariants.price,
+          productName: products.name,
+          image: matchingVariants.image,
+          // quantity
         })),
         totalPrice: cart.totalPrice,
       },
@@ -77,22 +87,14 @@ const addToCart = asyncHandler(async (req, res, next) => {
 });
 
 const getProductFromCart = asyncHandler(async (req, res, next) => {
-  const cacheKey = generateCacheKey("cart", req.user.userId);
-
   try {
     const userId = req.user.userId;
-
-    const cachedCart = await getCache(cacheKey);
-    if (cachedCart) {
-      return res.status(200).json({ message: "Cart cached", cart: cachedCart });
-    }
 
     const cart = await CartModel.findOne({ userId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    await setCache(cacheKey, cart);
     publishMessage("get_cart", cart);
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {

@@ -40,8 +40,7 @@ const InfoDisplay: React.FC<InfoDisplayProps> = ({
         setAvailableSizes(product.size);
       }
     }
-  }, [currentProduct?.variants, currentProduct, activeProductId]);
-  console.log(activeProductId);
+  }, [currentProduct?.variants, currentProduct, activeProductId, selectedSize]);
   return !isLoading ? (
     currentProduct ? (
       <section className="flex gap-10 bg-[#EFEFEF] max-lg:flex-col p-10 w-full">
@@ -64,7 +63,7 @@ const InfoDisplay: React.FC<InfoDisplayProps> = ({
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             {currentProduct.variants &&
-              currentProduct.variants.map((vari) => {
+              currentProduct.variants.map((vari: Variant) => {
                 return (
                   <button
                     key={vari.variantId}
@@ -73,6 +72,7 @@ const InfoDisplay: React.FC<InfoDisplayProps> = ({
                       setActiveImage(vari.image);
                       setAvailableSizes(vari.size);
                       setActivePrice(vari.price);
+                      setActiveProductId(vari.variantId);
                       if (!vari.size.includes(selectedSize)) {
                         setSelectedSize("");
                       }
