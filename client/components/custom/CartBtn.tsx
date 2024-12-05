@@ -51,16 +51,13 @@ const CartBtn = React.memo(
         alert("Please select a size for this product.");
         return;
       }
-      console.log("Fetching product...");
       if (auth.isSignedIn && product.productId && product.variantId) {
-        console.log("Signed in");
         try {
           const res = await addProductToCart.mutateAsync({
             productId: product.productId,
             variantId: product.variantId,
             size: product.size,
           });
-          console.log(res);
           return res.cart;
         } catch (error) {
           console.log("Failed to add product to cart:", error);

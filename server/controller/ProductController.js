@@ -222,9 +222,7 @@ const getProductById = asyncHandler(async (req, res, next) => {
             $inc: { viewCount: 1 },
           }
         );
-        if (updateCount) {
-          console.log("Updated");
-        }
+ 
 
         // Update the interaction history
         await UserInteractionModel.findByIdAndUpdate(userInteractions._id, {
@@ -272,7 +270,6 @@ const getProductById = asyncHandler(async (req, res, next) => {
         variants: recommendation.variants[0],
       };
     });
-    console.log(recommendations);
     await setCache(recommendCacheKey, newRecommendation);
     // Respond with the product and recommendations
     res.status(200).json({

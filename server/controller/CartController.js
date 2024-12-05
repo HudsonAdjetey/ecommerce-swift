@@ -3,11 +3,11 @@ const ProductModel = require("../model/Product.model");
 const CartModel = require("../model/Cart.model");
 const { setCache, getCache, generateCacheKey } = require("../utils/redisUtils");
 const { publishMessage } = require("../pubsub/publisher");
+const { default: mongoose } = require("mongoose");
 
 // add to cart
 const addToCart = asyncHandler(async (req, res, next) => {
   try {
-    const cacheKey = generateCacheKey("cart", req.user.userId);
     const { variantId, size } = req.body;
     if (!req.params.productId || !variantId) {
       return res
@@ -63,7 +63,6 @@ const addToCart = asyncHandler(async (req, res, next) => {
       0
     );
     await cart.save();
-    await setCache(cacheKey, cart);
     res.status(200).json({
       message: "Product added to cart",
       cart: {
@@ -90,22 +89,13 @@ const addToCart = asyncHandler(async (req, res, next) => {
 const getProductFromCart = asyncHandler(async (req, res, next) => {
   try {
     const userId = req.user.userId;
-    const cacheKey = generateCacheKey("cart", userId);
 
-    const cachedCart = await getCache(cachekey);
-    if (cachedCart) {
-      return res.status(200).json({
-        message: "Product cached successfully",
-        cart: cachedCart,
-      });
-    }
     const cart = await CartModel.findOne({ userId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
     publishMessage("get_cart", cart);
-    await setCache(cacheKey, cart);
     res.status(200).json({ message: "Cart retrieved", cart });
   } catch (error) {
     console.error(error);
@@ -116,12 +106,10 @@ const getProductFromCart = asyncHandler(async (req, res, next) => {
 
 // Remove product from cart
 const removeProductFromCart = asyncHandler(async (req, res, next) => {
-  const cacheKey = generateCacheKey("cart", req.user.userId);
-
   try {
-    const { productId, variantId } = req.body;
+    const { size, variantId } = req.body;
 
-    if (!productId || !variantId) {
+    if (!size || !variantId) {
       return res
         .status(400)
         .json({ message: "Product ID and variant ID are required" });
@@ -134,9 +122,7 @@ const removeProductFromCart = asyncHandler(async (req, res, next) => {
     }
 
     const productIndex = cart.items.findIndex(
-      (item) =>
-        item.productId.toString() === productId.toString() &&
-        item.variantId.toString() === variantId
+      (item) => item.size === size && item.variantId.toString() === variantId
     );
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });
@@ -146,7 +132,6 @@ const removeProductFromCart = asyncHandler(async (req, res, next) => {
     cart.items.splice(productIndex, 1);
 
     await cart.save();
-    await setCache(cacheKey, cart);
     publishMessage("remove_cart", cart);
     res.status(200).json({ message: "Items removed from cart", cart });
   } catch (error) {
@@ -158,15 +143,17 @@ const removeProductFromCart = asyncHandler(async (req, res, next) => {
 
 const updateCart = asyncHandler(async (req, res, next) => {
   try {
-    const cacheKey = generateCacheKey("cart", req.user.userId);
     const cart = await CartModel.findOne({ userId: req.user.userId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    const { variantId, quantity } = req.body;
+    const { variantId, quantity, size } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(variantId)) {
+      return res.status(400).json({ message: "Invalid variantId" });
+    }
     const productIndex = cart.items.findIndex(
-      (item) => item.variantId.toString() === variantId.toString()
+      (item) => item.variantId.toString() === variantId && item.size === size
     );
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });
@@ -177,8 +164,9 @@ const updateCart = asyncHandler(async (req, res, next) => {
       quantity * cart.items[productIndex].price;
     cart.totalPrice = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
 
-    await cart.save();
-    await setCache(cacheKey, cart);
+    await cart.save({
+      validateModifiedOnly: true,
+    });
     publishMessage("updated_cart", cart);
     res.status(200).json({ message: "Cart updated", cart });
   } catch (error) {

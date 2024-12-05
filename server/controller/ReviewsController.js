@@ -57,7 +57,9 @@ const getReviews = asyncHandler(async (req, res, next) => {
 
     if (cachedReviews) {
       reviews = JSON.parse(cachedReviews);
-      console.log(`Retrieved cache for key: ${cacheKey}`);
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`Retrieved cache for key: ${cacheKey}`);
+      }
     } else {
       reviews = await ReviewModel.findOne({
         productId: req.params.productId,

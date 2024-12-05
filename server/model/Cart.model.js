@@ -32,6 +32,9 @@ const CartSchema = new mongoose.Schema(
         subtotal: {
           type: Number,
           required: true,
+          set: (value) => {
+            return parseFloat(value).toFixed(2);
+          },
         },
         size: {
           type: String,
@@ -50,7 +53,10 @@ const CartSchema = new mongoose.Schema(
     totalPrice: {
       type: Number,
       required: true,
-      default: 0,
+      default: 0.0,
+      set: (value) => {
+        return parseFloat(value).toFixed(2);
+      },
     },
     coupon: {
       code: { type: String, default: null },
@@ -68,16 +74,24 @@ const CartSchema = new mongoose.Schema(
   }
 );
 
-// Middleware to calculate subtotal and total price
+function roundToTwo(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
 CartSchema.pre("save", function (next) {
+  console.log("Items before saving:", this.items);
+
   // Calculate subtotals for each item
   this.items.forEach((item) => {
-    item.subtotal = item.quantity * item.price;
+    item.subtotal = roundToTwo(item.quantity * item.price);
   });
 
   // Calculate total price for the cart
-  this.totalPrice = this.items.reduce((sum, item) => sum + item.subtotal, 0);
+  this.totalPrice = roundToTwo(
+    this.items.reduce((sum, item) => sum + item.subtotal, 0)
+  );
 
+  console.log("Subtotal and Total calculated:", this.totalPrice);
   next();
 });
 

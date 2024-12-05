@@ -5,18 +5,19 @@ import ProductInfo from "./ProductInfo";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Footer from "@/components/common/Footer";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 
 const CartComp = () => {
   const { getToken, userId } = useAuth();
   const [shipping, setShipping] = useState<string>("storePickup");
-
+  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["cart", userId],
     queryFn: async () => {
       const token = await getToken();
+      console.log(token);
       const response = await axios.get(
         `http://localhost:5913/api/cart/get-product-cart/`,
         {
@@ -31,9 +32,13 @@ const CartComp = () => {
 
   const updateMutation = useMutation({
     mutationKey: ["cart", userId],
-    mutationFn: async (data: { variantId: string; quantity: number }) => {
+    mutationFn: async (data: {
+      variantId: string;
+      quantity: number;
+      size: string;
+    }) => {
       const token = await getToken();
-      const res = await axios.put(
+      await axios.put(
         "http://localhost:5913/api/cart/update-product-cart",
         data,
         {
@@ -42,29 +47,68 @@ const CartComp = () => {
           },
         }
       );
-      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart", userId],
+      });
+    },
+  });
+
+  const removeCartMutation = useMutation({
+    mutationKey: ["cart", userId],
+    mutationFn: async (data: { variantId: string; size: string }) => {
+      const token = await getToken();
+      await axios.patch(
+        "http://localhost:5913/api/cart/remove-product-cart",
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart", userId],
+      });
     },
   });
 
   // handling increment and decrement functionality
-  const handleIncrement = (variantId: string, currentQuantity: number) => {
+  const handleIncrement = async (
+    variantId: string,
+    currentQuantity: number,
+    size: string
+  ) => {
     const newQuantity = currentQuantity + 1;
-    updateMutation.mutate({ variantId, quantity: newQuantity });
+    await updateMutation.mutateAsync({
+      variantId,
+      quantity: newQuantity,
+      size,
+    });
   };
 
-  const handleDecrement = (variantId: string, currentQuantity: number) => {
+  const handleDecrement = (
+    variantId: string,
+    currentQuantity: number,
+    size: string
+  ) => {
     if (currentQuantity > 1) {
       const newQuantity = currentQuantity - 1;
-      updateMutation.mutate({ variantId, quantity: newQuantity });
+      updateMutation.mutate({ variantId, quantity: newQuantity, size });
+      return;
+    } else if (currentQuantity <= 1) {
+      removeCartMutation.mutate({
+        variantId,
+        size,
+      });
+      return;
     }
   };
 
   const cartContainer = data?.cart;
-
-  const handleCopy = (productId: string) => {
-    navigator.clipboard.writeText(productId);
-    alert("Copied to clipboard!");
-  };
 
   if (isLoading) {
     return (
@@ -92,7 +136,7 @@ const CartComp = () => {
 
       <div className="relative overflow-x-clip">
         <div>
-          {cartContainer
+          {cartContainer.items.length > 0
             ? cartContainer.items.map(
                 (cart: CartListItemsPageProps, idx: string) => (
                   <div
@@ -100,17 +144,20 @@ const CartComp = () => {
                     key={idx}
                   >
                     <ProductInfo
-                      handleCopy={handleCopy}
                       src={cart.image}
                       productName={cart.productName}
-                      variantId={cart.variantId}
-                      color={cart.color ?? "red"}
+                      variantId={cart.sku}
+                      size={cart.size}
                     />
                     <div className="flex self-center gap-3">
                       <button
                         className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold"
                         onClick={() =>
-                          handleIncrement(cart.variantId, cart.quantity)
+                          handleIncrement(
+                            cart.variantId,
+                            cart.quantity,
+                            cart.size
+                          )
                         }
                       >
                         +
@@ -118,7 +165,11 @@ const CartComp = () => {
                       <span className="text-xl ">{cart.quantity}</span>
                       <button
                         onClick={() =>
-                          handleDecrement(cart.variantId, cart.quantity)
+                          handleDecrement(
+                            cart.variantId,
+                            cart.quantity,
+                            cart.size
+                          )
                         }
                         className="w-12 p-2 h-7 flex items-center justify-center border border-neutral-400 rounded-xl font-semibold"
                       >
@@ -180,15 +231,18 @@ const CartComp = () => {
             </div>
           </div>
 
-          <button className="flex mt-5 w-full items-center gap-5 justify-between bg-black text-white py-3 px-4 rounded-lg hover:bg-black/90">
+          <button
+            disabled={cartContainer.items && cartContainer.items.length === 0}
+            className="flex mt-5 w-full items-center gap-5 justify-between bg-black text-white py-3 px-4 rounded-lg hover:bg-black/90"
+          >
             <span>Checkout</span>
             <span>
               {cartContainer
                 ? shipping === "homeDelivery"
-                  ? "Ghs " + cartContainer.totalPrice + 20
-                  : "Ghs " + cartContainer.totalPrice
+                  ? "Ghs " + (Number(cartContainer.totalPrice) + 20).toFixed(2)
+                  : "Ghs " + Number(cartContainer.totalPrice).toFixed(2)
                 : shipping === "homeDelivery"
-                ? 20
+                ? 20.0
                 : 0}
             </span>
           </button>

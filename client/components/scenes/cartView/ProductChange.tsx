@@ -7,7 +7,6 @@ const ProductChange = ({
   quantity: number;
   price: number;
 }) => {
-  console.log(price);
   return (
     <div className="flex   items-center  max-md:mt-4 max-md:w-full ">
       <div className="flex self-center gap-3">

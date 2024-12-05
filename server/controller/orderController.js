@@ -77,14 +77,18 @@ const getUserOrder = asyncHandler(async (req, res, next) => {
     const cacheKey = generateCacheKey("usersOrder", req.user.userId);
     const cachedOrder = await getCache(cacheKey);
     if (cachedOrder) {
-      console.log("Retrieved order from cache");
+      if (process.env.NODE_ENV !== "production") {
+        console.log("Retrieved order from cache");
+      }
 
       return res.status(200).json({
         message: "Order retrieved from cache",
         order: cachedOrder,
       });
     }
-    console.log("Cache miss");
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Cache miss");
+    }
     const order = await OrderModel.findOne({
       userId: req.user.userId,
     }).populate("items");

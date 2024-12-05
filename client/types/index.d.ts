@@ -232,6 +232,7 @@ interface CartListItemsPageProps {
   image: StaticImageData;
   productName: string;
   color: string;
+  sku: string;
 }
 
 interface CouponProps {

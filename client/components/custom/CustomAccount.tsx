@@ -40,7 +40,6 @@ const CustomAccount = () => {
             withCredentials: true, 
           }
         );
-        console.log(res.data);
         if (res) {
           return;
         }

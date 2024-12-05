@@ -21,7 +21,7 @@ CartRouter.get(
 
 
 
-CartRouter.delete(
+CartRouter.patch(
   "/remove-product-cart/",
   protectedRouteMiddleware,
   removeProductFromCart

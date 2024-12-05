@@ -1,9 +1,9 @@
 const redisClient = require("../config/redisConfig");
-const fs = require("fs").promises; // Use fs.promises for async/await support
+const fs = require("fs").promises;
 
 const FallbackFile = "../logs/fallback.json";
 const MAX_RETRIES = 5;
-const RETRY_DELAY = 3000; // 3 seconds retry delay
+const RETRY_DELAY = 3000;
 
 // A single Redis subscriber client that will be reused across subscriptions
 let redisSubscriberClient;
@@ -47,7 +47,6 @@ const subscribeToChannel = async (channel, retriesLeft = MAX_RETRIES) => {
       try {
         const parsedMessage = JSON.parse(message);
         console.log(`Received message on channel "${channel}":`, parsedMessage);
-        // Process the message, e.g., send notifications or handle events here
       } catch (error) {
         console.error(
           `Error parsing message on channel "${channel}": ${error.message}`
@@ -97,7 +96,10 @@ const storeFailedSubscription = async (channel, error) => {
     if (process.env.NODE_ENV !== "production") {
       await fs.appendFile(
         FallbackFile,
-        JSON.stringify(failedSubscription) + "\n"
+        JSON.stringify(failedSubscription) + "\n",
+        {
+          encoding: "utf-8",
+        }
       );
       console.log("Failed subscription stored successfully");
     }
