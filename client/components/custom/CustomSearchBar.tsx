@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, X } from "lucide-react";
+import {  X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGlobalSearch } from "@/hooks/useSearchContext";
-import { productsContainer } from "@/dummy/products";
-import { searchFunctionProduct } from "@/lib/actions/searchFunction";
 import dynamic from "next/dynamic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -23,9 +20,7 @@ const CustomSearchBar = ({
   searchContainerRef: React.RefObject<HTMLDivElement>;
   toggleSearch: boolean;
 }) => {
-  const { handleChange, searchItem, handleReset } = useSearch();
-  const product = productsContainer;
-  const alProducts = searchFunctionProduct(searchItem, product);
+  const { handleChange, searchItem } = useSearch();
   const [productContainers, setProductContainers] = useState<
     ProductsProps[] | []
   >([]);
