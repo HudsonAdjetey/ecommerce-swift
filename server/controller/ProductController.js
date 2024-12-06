@@ -430,38 +430,33 @@ const searchProduct = asyncHandler(async (req, res, next) => {
     const { query, autocomplete = false } = req.query;
     const pipeline = [];
     if (autocomplete) {
-      pipeline.push({
-        $search: {
-          index: "default",
-          autocomplete: {
-            query: query ? query : "",
-            path: "name",
-            fuzzy: {
-              maxEdits: 2,
-              prefixLength: 0,
-              maxExpansions: 50,
+      pipeline.push(
+        {
+          $search: {
+            index: "default",
+            autocomplete: {
+              query: query,
+              path: "name",
             },
           },
         },
-      });
+        {
+          $limit: 4,
+        }
+      );
     } else {
       pipeline.push(
         {
           $search: {
             index: "default",
             text: {
-              query: query ? query : "",
-              path: ["name", "tags", "brand", "category", "typeMain"],
-              fuzzy: {
-                maxEdits: 2,
-                prefixLength: 0,
-                maxExpansions: 10,
-              },
+              query: query,
+              path: ["name", "brand", "category", "typeMain"],
             },
           },
         },
         {
-          $limit: 10,
+          $limit: 4,
         }
       );
     }
@@ -476,6 +471,44 @@ const searchProduct = asyncHandler(async (req, res, next) => {
   }
 });
 
+const getFetchSearch = asyncHandler(async (req, res, next) => {
+  try {
+    const { searchQuery, limit, page } = req.query;
+    const searchGroup = searchQuery.toLowerCase().split(/[ ,._-]+/);
+    const listItems = [];
+    const products = await ProductModel.find();
+    if (searchQuery.trim() === "") {
+      return res.status(200).json({
+        products: products,
+        message: "Products retrieved successfully",
+      });
+    }
+    products.forEach((prod) => {
+      const prodKeys = [prod.name, prod.brand, prod.typeMain, prod.category]
+        .join(" ")
+        .toLowerCase();
+      const prodMatch = searchGroup.some((word) =>
+        prodKeys.includes(word.toLowerCase())
+      );
+
+      if (prodMatch) {
+        listItems.push(prod);
+      }
+    });
+    res.status(200).json({
+      products: listItems,
+      message: "Products retrieved successfully",
+    });
+  } catch (error) {
+    console.error("Search Error:", error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+    next(error);
+  }
+});
+
 module.exports = {
   createProducts,
   getProducts,
@@ -484,4 +517,5 @@ module.exports = {
   deleteProductById,
   performProductSearch,
   searchProduct,
+  getFetchSearch,
 };

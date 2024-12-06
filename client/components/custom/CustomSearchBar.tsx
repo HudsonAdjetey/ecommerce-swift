@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -6,6 +6,9 @@ import { useGlobalSearch } from "@/hooks/useSearchContext";
 import { productsContainer } from "@/dummy/products";
 import { searchFunctionProduct } from "@/lib/actions/searchFunction";
 import dynamic from "next/dynamic";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import useSearch from "@/hooks/useSearch";
 const ImageBlurComponent = dynamic(
   () => import("@/components/common/ImageBlur")
 );
@@ -20,9 +23,38 @@ const CustomSearchBar = ({
   searchContainerRef: React.RefObject<HTMLDivElement>;
   toggleSearch: boolean;
 }) => {
-  const { handleChange, searchItem } = useGlobalSearch();
+  const { handleChange, searchItem, handleReset } = useSearch();
   const product = productsContainer;
   const alProducts = searchFunctionProduct(searchItem, product);
+  const [productContainers, setProductContainers] = useState<
+    ProductsProps[] | []
+  >([]);
+  const queryClient = useQueryClient();
+  const handleSearchQuery = useQuery({
+    queryKey: ["searchQuery"],
+    queryFn: async () => {
+      const res = await axios.get(
+        `http://localhost:5913/api/product/search-products?query=${searchItem}`
+      );
+      return res.data;
+    },
+
+    enabled: searchItem !== "",
+  });
+
+  useEffect(() => {
+    if (searchItem) {
+      queryClient.invalidateQueries({
+        queryKey: ["searchQuery"],
+      });
+      if (handleSearchQuery.data) {
+        setProductContainers(handleSearchQuery.data.products);
+      }
+    } else {
+      setProductContainers([]);
+    }
+  }, [handleSearchQuery.data, searchItem]);
+
   return (
     <motion.div
       key="search-overlay"
@@ -82,39 +114,34 @@ const CustomSearchBar = ({
               </ul>
             </div>
             {/* Display Search Results */}
-            <div className="grid  transition-all duration-300 flex-1 max-lg:grid-cols-3 max-sm:grid-cols-2  grid-cols-4 gap-3">
-              {searchItem ? (
-                alProducts.map((pro, index) => (
-                  //
-                  <div key={index} className="w-full h-full cursor-pointer">
-                    <ImageBlurComponent
-                      src={pro.image}
-                      alt={pro.name}
-                      width={350}
-                      height={400}
-                    />
-                    {/* title */}
-                    <small className="text-neutral-600 tracking-wider mb-4">
-                      {pro.brand}
-                    </small>
-                    <h3 className="text-lg text-neutral-900 font-medium">
-                      {pro.name}
-                    </h3>
-                    <p className="mt-2">
-                      GHS{" "}
-                      {pro.price.toLocaleString("en", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </p>
-                  </div>
-                ))
+            <div className="grid transition-all duration-200 flex-1 max-lg:grid-cols-3 max-sm:grid-cols-2 grid-cols-4 gap-3">
+              {searchItem && productContainers?.length ? (
+                productContainers.slice(0, 10).map((prod) =>
+                  prod?.variants?.map((variant) => (
+                    <div key={`${prod._id}-${variant._id}`}>
+                      <ImageBlurComponent
+                        src={variant.image}
+                        alt={prod.name}
+                        width={350}
+                        height={400}
+                      />
+                      <small className="text-neutral-600 tracking-wider mb-4">
+                        {prod.brand}
+                      </small>
+                      <h3 className="text-lg text-neutral-900 font-medium">
+                        {prod.name}
+                      </h3>
+                      <p className="mt-2">
+                        GHS{" "}
+                        {variant.price.toLocaleString("en", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                  ))
+                )
               ) : (
-                <p className="text-sm text-center flex items-center gap-3 justify-center font-medium text-black/70">
-                  <span>Search result empty</span>
-                  <span>
-                    <Search size={20} />
-                  </span>
-                </p>
+                <p className="text-center col-span-full">Nothing here</p>
               )}
             </div>
           </div>

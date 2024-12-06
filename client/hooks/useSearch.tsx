@@ -6,12 +6,9 @@ const useSearch = () => {
   const [searchItem, setSearchItem] = useState("");
 
   // Debounce the search input
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
-    _.debounce((value: string) => {
-      setSearchItem(value);
-    }, 600),
-    [setSearchItem]
+    _.debounce((value) => setSearchItem(value), 300),
+    [searchItem]
   );
 
   const handleReset = () => {

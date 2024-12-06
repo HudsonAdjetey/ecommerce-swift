@@ -18,26 +18,28 @@ import Link from "next/link";
 import CustomSearchBar from "@/components/custom/CustomSearchBar";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { useRouter } from "next/navigation";
+import { useGlobalSearch } from "@/hooks/useSearchContext";
 
 const Navbar = () => {
   const [toggled, setToggled] = useState<boolean>(false);
   const [toggleSearch, setToggleSearch] = useState<boolean>(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-
+const {handleReset} = useGlobalSearch()
   const handleToggled = useCallback(() => {
     setToggled((prev) => {
       const newToggled = !prev;
       if (!newToggled) {
-        // handleReset();
+        handleReset();
       }
       return newToggled;
     });
-  }, []);
+  }, [handleReset]);
 
   const handleToggleSearch = () => {
     setToggleSearch(!toggleSearch);
     if (!toggleSearch) {
       // perform resetting search
+      handleReset()
     }
   };
 

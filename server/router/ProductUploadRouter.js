@@ -9,6 +9,7 @@ const {
   deleteProductById,
   performProductSearch,
   searchProduct,
+  getFetchSearch,
 } = require("../controller/ProductController");
 const checkAuthMiddleware = require("../middleware/authCheckMiddleware");
 const ProductRouter = express.Router();
