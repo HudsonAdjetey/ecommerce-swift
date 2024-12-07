@@ -13,7 +13,7 @@ import {
 import { User } from "lucide-react";
 import { useAuth, useUser, SignInButton, SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
-import axios from "axios";
+import { api } from "@/lib/actions/api.action";
 
 const CustomAccount = () => {
   const { user } = useUser();
@@ -23,8 +23,8 @@ const CustomAccount = () => {
   const handleAuthentication = useCallback(async () => {
     if (isSignedIn && user) {
       try {
-        const res = await axios.post(
-          "http://localhost:5913/api/auth/authenticate",
+        const res = await api.post(
+          "/auth/authenticate",
           {
             userId: userId,
             fullName: user.fullName || null,

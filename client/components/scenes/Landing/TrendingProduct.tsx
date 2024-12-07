@@ -1,7 +1,7 @@
 "use client";
 import ProductCardMin from "@/components/custom/Product-1-card";
+import { api } from "@/lib/actions/api.action";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 const TrendingProduct = () => {
@@ -11,8 +11,8 @@ const TrendingProduct = () => {
   const trendingQuery = useQuery({
     queryKey: ["trendingproducts"],
     queryFn: async () => {
-      const res = await axios.get(
-        "http://localhost:5913/api/product/product-trending"
+      const res = await api.get(
+        "/product/product-trending"
       );
       return res.data;
     },

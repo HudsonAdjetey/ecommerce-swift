@@ -2,9 +2,9 @@
 import { useAuth } from "@clerk/nextjs";
 import React, { useCallback, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
+import { api } from "@/lib/actions/api.action";
 
 const CartBtn = React.memo(
   ({
@@ -29,8 +29,8 @@ const CartBtn = React.memo(
         size: string;
       }) => {
         const token = await auth.getToken();
-        const response = await axios.post(
-          `http://localhost:5913/api/cart/cart-product/${product.productId}`,
+        const response = await api.post(
+          `/cart/cart-product/${product.productId}`,
           data,
           {
             headers: {

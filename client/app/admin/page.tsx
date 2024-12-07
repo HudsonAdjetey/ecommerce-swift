@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import axios from "axios";
+import { api } from "@/lib/actions/api.action";
 
 const page = memo(() => {
   const [fileContent, setFileContent] = useState<string>("");
@@ -76,8 +76,8 @@ const page = memo(() => {
         tags: tagCol,
         variants: [variant],
       };
-      await axios.post(
-        "http://localhost:5913/api/product/create-product",
+      await api.post(
+        "/api/product/create-product",
         body
       );
     } catch (error) {

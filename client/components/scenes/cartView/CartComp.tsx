@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import Footer from "@/components/common/Footer";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
-import axios from "axios";
+import { api } from "@/lib/actions/api.action";
 
 const CartComp = () => {
   const { getToken, userId } = useAuth();
@@ -17,8 +17,8 @@ const CartComp = () => {
     queryKey: ["cart", userId],
     queryFn: async () => {
       const token = await getToken();
-      const response = await axios.get(
-        `http://localhost:5913/api/cart/get-product-cart/`,
+      const response = await api.get(
+        `/cart/get-product-cart/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -37,8 +37,8 @@ const CartComp = () => {
       size: string;
     }) => {
       const token = await getToken();
-      await axios.put(
-        "http://localhost:5913/api/cart/update-product-cart",
+      await api.put(
+        "/cart/update-product-cart",
         data,
         {
           headers: {
@@ -58,8 +58,8 @@ const CartComp = () => {
     mutationKey: ["cart", userId],
     mutationFn: async (data: { variantId: string; size: string }) => {
       const token = await getToken();
-      await axios.patch(
-        "http://localhost:5913/api/cart/remove-product-cart",
+      await api.patch(
+        "/cart/remove-product-cart",
         data,
         {
           headers: {

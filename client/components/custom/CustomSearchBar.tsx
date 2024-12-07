@@ -4,9 +4,9 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import useSearch from "@/hooks/useSearch";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/actions/api.action";
 const ImageBlurComponent = dynamic(
   () => import("@/components/common/ImageBlur")
 );
@@ -29,8 +29,8 @@ const CustomSearchBar = ({
   const handleSearchQuery = useQuery({
     queryKey: ["searchQuery"],
     queryFn: async () => {
-      const res = await axios.get(
-        `http://localhost:5913/api/product/search-products?query=${searchItem}`
+      const res = await api.get(
+        `/product/search-products?query=${searchItem}`
       );
       return res.data;
     },

@@ -10,7 +10,6 @@ const Loading = () => {
         width={40}
         height={40}
         className="animate-spin"
-        layout="intrinsic"
       />
       Loading...
     </div>

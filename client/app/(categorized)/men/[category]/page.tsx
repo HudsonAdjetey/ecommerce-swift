@@ -4,8 +4,8 @@ import Footer from "@/components/common/Footer";
 import StickyBase from "@/components/common/Navbar/StickyBase";
 import ProductList from "@/components/scenes/productPage/ProductList";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useParams } from "next/navigation";
+import { api } from "@/lib/actions/api.action";
 
 const Pages = () => {
   const searchParams = useParams();
@@ -15,8 +15,8 @@ const Pages = () => {
   const useFetchQuery = useQuery({
     queryKey: ["products", searchParams.category],
     queryFn: async () => {
-      const res = await axios.get(
-        `http://localhost:5913/api/product/get-products/?category=men&page=${page}`
+      const res = await api.get(
+        `/product/get-products/?category=men&page=${page}`
       );
       return res.data;
     },
