@@ -33,7 +33,7 @@ app.use(helmet());
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-if (NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development") {
   app.use(sessionRequest);
 }
 
