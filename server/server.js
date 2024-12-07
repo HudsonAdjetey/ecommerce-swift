@@ -15,7 +15,6 @@ const AuthRouter = require("./router/AuthRouter");
 const CouponRouter = require("./router/CouponRouter");
 const ProductRouter = require("./router/ProductUploadRouter");
 const OrderRouter = require("./router/OrderRouter");
-const PaymentRouter = require("./router/PaymentRouter");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 // database connection configuration
@@ -34,7 +33,9 @@ app.use(helmet());
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-app.use(sessionRequest);
+if (NODE_ENV === "development") {
+  app.use(sessionRequest);
+}
 
 app.use(logger);
 
@@ -56,7 +57,7 @@ app.use("/api/auth/", AuthRouter);
 app.use("/api/cart/", CartRouter);
 app.use("/api/coupon", CouponRouter);
 app.use("/api/order", OrderRouter);
-app.use("/api/payment", PaymentRouter);
+// app.use("/api/payment", PaymentRouter);
 app.use("/api/product", ProductRouter);
 
 // app.use(notFound());

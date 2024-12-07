@@ -9,7 +9,7 @@ const limiter = rateLimit({
   handler: (req, res, options) => {
     logEvent(
       `Rate limit exceeded ${options?.message}\t${req.method}`,
-      errorLog.log
+     ' errorLog.log'
     );
   },
 });
