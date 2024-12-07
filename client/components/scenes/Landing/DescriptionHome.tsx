@@ -20,8 +20,15 @@ const DescriptionHome = () => {
           Our Mission is to provide you with a wide range of products
         </p>
         <div className="flex gap-6 justify-center my-6">
-          <CustomBtn className="hover:bg-black/90" />
-          <CustomBtn className="bg-white text-black font-medium border-neutral-400 border hover:bg-transparent" />
+          <CustomBtn
+            href="collections/new-arrival"
+            className="hover:bg-black/90"
+          />
+          <CustomBtn
+            textString="Our Sales"
+            href="collections/sales"
+            className="bg-white text-black font-medium border-neutral-400 border hover:bg-transparent"
+          />
         </div>
       </div>
 
@@ -37,7 +44,7 @@ const DescriptionHome = () => {
             <figcaption>
               <CustomBtn
                 textString="Explore Now"
-                className="hover:bg-white hover:text-black"
+                className="hover:bg-white py-4 text-sm hover:text-black"
               />
             </figcaption>
           </figure>

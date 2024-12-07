@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {  X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import useSearch from "@/hooks/useSearch";
+import { useRouter } from "next/navigation";
 const ImageBlurComponent = dynamic(
   () => import("@/components/common/ImageBlur")
 );
@@ -48,8 +49,8 @@ const CustomSearchBar = ({
     } else {
       setProductContainers([]);
     }
-  }, [handleSearchQuery.data, searchItem]);
-
+  }, [handleSearchQuery.data, searchItem, queryClient]);
+  const router = useRouter()
   return (
     <motion.div
       key="search-overlay"
@@ -113,7 +114,15 @@ const CustomSearchBar = ({
               {searchItem && productContainers?.length ? (
                 productContainers.slice(0, 10).map((prod) =>
                   prod?.variants?.map((variant) => (
-                    <div key={`${prod._id}-${variant._id}`}>
+                    <button
+                      onClick={() => {
+                        router.push(
+                          `/products/${prod.category}/?type=${prod.typeMain}&id=${prod._id}`
+                        );
+                      }}
+                      key={`${prod._id}-${variant._id}`}
+                      className="border-0 outline-none focus-within:outline-none"
+                    >
                       <ImageBlurComponent
                         src={variant.image}
                         alt={prod.name}
@@ -132,7 +141,7 @@ const CustomSearchBar = ({
                           minimumFractionDigits: 2,
                         })}
                       </p>
-                    </div>
+                    </button>
                   ))
                 )
               ) : (

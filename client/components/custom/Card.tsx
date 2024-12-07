@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
@@ -5,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { StaticImageData } from "next/image";
+import { useRouter } from "next/navigation";
 
 const ImageBlurComponent = dynamic(
   () => import("@/components/common/ImageBlur")
@@ -17,14 +19,21 @@ const CardBoard = ({
   price,
   link,
   className,
+  id,
+  category,
+  typeMain,
 }: {
   src: string | StaticImageData;
   alt: string;
   title: string;
-  price: string;
+  price: number;
   link: string;
   className?: string;
+  id?: string;
+  category?: string;
+  typeMain?: string;
 }) => {
+  const router = useRouter();
   return (
     <div>
       <div
@@ -43,7 +52,12 @@ const CardBoard = ({
           whileHover={{ y: 0, opacity: 1 }}
           className="absolute inset-0 flex items-end p-4  max-sm:hidden"
         >
-          <button className=" flex items-center gap-3 justify-center bg-white py-4 px-2 rounded-full w-full font-semibold">
+          <button
+            onClick={() => {
+              router.push(`/products/${category}/?type=${typeMain}&id=${id}`);
+            }}
+            className=" flex items-center gap-3 justify-center bg-white py-4 px-2 rounded-full w-full font-semibold"
+          >
             <span>
               <Eye size={20} />
             </span>

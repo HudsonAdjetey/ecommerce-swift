@@ -245,3 +245,13 @@ interface CartListedPageProps {
   totalPrice: number;
   coupon: CouponProps;
 }
+
+
+interface LandingProductsProps {
+  productName: string;
+  variants: Variant,
+  productId: string;
+  category: string;
+  brand: string;
+  typeMain: string;
+}

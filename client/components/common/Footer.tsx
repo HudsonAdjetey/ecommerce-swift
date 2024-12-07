@@ -13,12 +13,12 @@ const Footer = () => {
           <p className="text-lg">Be part of a brand community</p>
         </div>
         <div className="flex  items-center gap-4  max-sm:flex-1">
-          <Link
+          {/*     <Link
             href={"/account"}
             className="lg:hover:underline max-sm:underline text-lg font-medium"
           >
             Account
-          </Link>
+          </Link> */}
           <CustomBtn />
         </div>
       </div>

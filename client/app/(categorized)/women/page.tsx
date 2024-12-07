@@ -5,11 +5,9 @@ import React from "react";
 import {
   HeroEssentialWome,
   MenImages,
-  productsImages,
   WomenMenGrid,
 } from "@/constants/img.constants";
 import GridImageContent from "@/components/common/GridImageContent";
-import CardBoard from "@/components/custom/Card";
 import Footer from "@/components/common/Footer";
 
 const page = () => {
@@ -74,36 +72,7 @@ const page = () => {
           imgUrl={WomenMenGrid.WomenMenGrid2}
         />
       </div>
-      <div className="grid container mb-32 mt-20 grid-cols-4 gap-7 max-md:grid-cols-1">
-        <CardBoard
-          alt="Nike air pegasus"
-          link="/men/air-pegasus"
-          price="Ghs 120.00"
-          src={productsImages.NIKE_AIR_PEGASUS_BLACK_Men}
-          title="Nike Air Pegasus"
-        />
-        <CardBoard
-          alt="nocta"
-          link="/men/nocta"
-          price="Ghs 124.00"
-          src={productsImages.NOCTA_BLUE}
-          title="Nocta blue"
-        />
-        <CardBoard
-          alt="Nike air pegasus"
-          link="/men/air-pegasus"
-          price="Ghs 120.00"
-          src={productsImages.VAPORFLY_MEN_BLUE}
-          title="Nike Air Pegasus"
-        />
-        <CardBoard
-          alt="Nike air pegasus"
-          link="/men/air-pegasus"
-          price="Ghs 120.00"
-          src={productsImages.HI_SHOE_BLACK}
-          title="Nike Air Pegasus"
-        />
-      </div>
+ 
       <Footer />
     </main>
   );

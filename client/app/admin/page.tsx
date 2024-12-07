@@ -76,11 +76,10 @@ const page = memo(() => {
         tags: tagCol,
         variants: [variant],
       };
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:5913/api/product/create-product",
         body
       );
-      console.log(res);
     } catch (error) {
       console.log(error);
     }

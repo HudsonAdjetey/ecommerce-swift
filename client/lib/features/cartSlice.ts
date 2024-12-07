@@ -1,21 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const CART_KEY = "guest_user";
-
-const loadCartFromSession = () => {
-  if (typeof window !== undefined) {
-    const cartFetch = window.sessionStorage.getItem(CART_KEY);
-    return cartFetch ? JSON.parse(cartFetch) : [];
-  }
-  return [];
-};
-
-export const saveCartItemsToSessionStorage = (items: CartItemProps) => {
-  if (typeof window !== undefined) {
-    window.sessionStorage.setItem(CART_KEY, JSON.stringify(items));
-  }
-};
-
 const updateCartTotals = (items: CartProps[]) => {
   const totalPrice = items.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -29,7 +13,7 @@ const updateCartTotals = (items: CartProps[]) => {
 };
 
 const initialState: CartItemProps = {
-  items: loadCartFromSession(),
+  items: [],
   totalItems: 0,
   subtotal: 0,
   isLoading: false,
@@ -63,13 +47,6 @@ const cartSlice = createSlice({
       state.totalItems = totals.totalItems;
       state.subtotal = totals.totalPrice;
       state.totalPrice = totals.totalPrice;
-      saveCartItemsToSessionStorage({
-        items: state.items,
-        totalItems: totals.totalItems,
-        subtotal: totals.totalPrice,
-        totalPrice: totals.totalPrice,
-        currency: state.currency,
-      });
     },
     removeFromCart: (state, action) => {
       const itemToRemove = state.items.find(
@@ -85,13 +62,6 @@ const cartSlice = createSlice({
         state.totalItems = totals.totalItems;
         state.subtotal = totals.totalPrice;
         state.totalPrice = totals.totalPrice;
-        saveCartItemsToSessionStorage({
-          items: state.items,
-          totalItems: totals.totalItems,
-          subtotal: totals.totalPrice,
-          totalPrice: totals.totalPrice,
-          currency: state.currency,
-        });
       }
     },
     updateCart: (state, action) => {
@@ -106,26 +76,12 @@ const cartSlice = createSlice({
       state.totalItems = totals.totalItems;
       state.subtotal = totals.totalPrice;
       state.totalPrice = totals.totalPrice;
-      saveCartItemsToSessionStorage({
-        items: state.items,
-        totalItems: totals.totalItems,
-        subtotal: totals.totalPrice,
-        totalPrice: totals.totalPrice,
-        currency: state.currency,
-      });
     },
     clearCart: (state) => {
       state.items = [];
       state.totalItems = 0;
       state.subtotal = 0;
       state.totalPrice = 0;
-      saveCartItemsToSessionStorage({
-        items: state.items,
-        totalItems: 0,
-        subtotal: 0,
-        totalPrice: 0,
-        currency: state.currency,
-      });
     },
   },
 });

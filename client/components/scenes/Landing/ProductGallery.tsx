@@ -13,12 +13,13 @@ const ProductGallery = () => {
           All Brands. Fashion Line.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full">
           <GridImageContent
             imgUrl={HeroImgs.Grid1}
             textFirstString="The Custom"
             textSecond="Party Fly"
             btnContent="Purchase"
+            href="/men/shoe"
           />
           <GridImageContent
             imgUrl={HeroImgs.Grid2}
@@ -26,6 +27,7 @@ const ProductGallery = () => {
             textSecond="Party Fly"
             btnContent="Shop Now"
             cls="bg-white text-black hover:bg-white/90"
+            href="/women/accessories"
           />
           <GridImageContent
             imgUrl={HeroImgs.Grid3}
@@ -33,12 +35,14 @@ const ProductGallery = () => {
             textSecond="Party Fly"
             btnContent="Shop Now"
             cls="bg-white text-black hover:bg-white/90"
+            href="/men/shoe"
           />
           <GridImageContent
             imgUrl={HeroImgs.Grid4}
             textFirstString="The Custom"
             textSecond="Party Fly"
             btnContent="Purchase"
+            href="/women/accessories"
           />
         </div>
       </div>

@@ -427,7 +427,7 @@ const performProductSearch = asyncHandler(async (req, res, next) => {
 
 const searchProduct = asyncHandler(async (req, res, next) => {
   try {
-    const { query, autocomplete = false } = req.query;
+    const { query, autocomplete = true } = req.query;
     const pipeline = [];
     if (autocomplete) {
       pipeline.push(

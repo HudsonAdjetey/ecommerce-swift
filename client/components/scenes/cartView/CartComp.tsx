@@ -17,7 +17,6 @@ const CartComp = () => {
     queryKey: ["cart", userId],
     queryFn: async () => {
       const token = await getToken();
-      console.log(token);
       const response = await axios.get(
         `http://localhost:5913/api/cart/get-product-cart/`,
         {

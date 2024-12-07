@@ -1,5 +1,5 @@
 const express = require("express");
-const upload = require("../utils/upload"); // Import your multer configuration
+const upload = require("../utils/upload");
 const protectedRouteMiddleware = require("../middleware/authMiddleware");
 const {
   createProducts,
@@ -7,11 +7,13 @@ const {
   getProductById,
   updateProductById,
   deleteProductById,
-  performProductSearch,
+  // performProductSearch,
   searchProduct,
-  getFetchSearch,
+  // getFetchSearch,
+  
 } = require("../controller/ProductController");
 const checkAuthMiddleware = require("../middleware/authCheckMiddleware");
+const trendingProducts = require("../services/trendingProductService");
 const ProductRouter = express.Router();
 
 // Endpoint to handle product creation with image upload
@@ -27,3 +29,5 @@ ProductRouter.delete("/delete-product/:productId", deleteProductById);
 // ProductRouter.get("/search-products", performProductSearch);
 ProductRouter.get("/search-products", searchProduct);
 module.exports = ProductRouter;
+
+ProductRouter.get("/product-trending", trendingProducts)
